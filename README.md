@@ -6,6 +6,9 @@ RGB-D 基線、實際 DA3METRIC-LARGE 推論、三態通行分析與失敗案例
 
 開啟本機展示：**http://127.0.0.1:8840/viewer/**（先啟動下方 server）。
 
+首次展示請看 [三分鐘操作流程與第一版交付](docs/demo-guide.md)：包含預期結果、
+技術追問回答與已知邊界。第一版本機核心已完成；DA3 負例保留，Colab／GPU 尚未實測。
+
 ## 現有工作目錄直接執行
 
 PowerShell，工作目錄 `D:\AI-Portfolio\CC_github部隊\care-space-3d`：
