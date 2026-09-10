@@ -45,3 +45,46 @@ reset action restores endpoints plus study radius. Reference mode overlays geome
 the active method's reconstruction grid remains the only browser-planning input.
 Three.js redraws on changes/resizes and while OrbitControls damping settles, then stops.
 Stale GLTF callbacks are invalidated by content revision and dispose their whole hierarchy.
+
+First-visit interaction revision (2026-09-10):
+- DOM reading/focus order is query conditions, current result, 3D, advanced query,
+  saved method comparison, research evidence. One instance of each control across sizes.
+- Default mode is browse. Canvas wheel scrolls the page and ground clicks do not edit
+  endpoints. Explicit camera mode enables OrbitControls; completion or Escape returns
+  to browse. Start/goal edit mode alone enables ground placement and focused-viewport
+  arrow keys. A successful ground placement exits edit mode; a drag over 5 px does not
+  place an endpoint. Case changes and explicit reset return to browse.
+- Current case/method/source/radius appear in a summary. Baseline label is computed
+  from actual radius/start/goal against the selected method's saved query. Invalid
+  coordinates show pending input; reset provides live confirmation. Changing cases
+  retains radius but resets to the first method and saved endpoints; changing methods
+  preserves query coordinates/radius. Saved comparison rows remain fixed experiment data.
+- Main verdict uses plain language; expanded rationale retains geometry assumptions
+  and distinguishes endpoint/boundary blockage from disconnected paths. All passable
+  labels consistently say 可通行. All observations means all saved frames for this case,
+  not full spatial coverage.
+- View controls, interaction hint and legends sit outside the canvas. Point cloud is
+  initially on; disabling it improves floor/path readability without changing evidence.
+- A single native frame dialog shows RGB/depth side by side above 700 px; below that,
+  pressed-state buttons select one image. Every new frame opens on RGB. Header/close
+  remain sticky; method and frame labels, sensor/predicted depth routing, missing
+  preview state and native Escape/focus return are preserved.
+
+Typography follow-up (2026-09-10):
+- Viewer text has a 16 px minimum at desktop and mobile sizes, including form controls,
+  hints, legends, method tables, frame labels, dialog captions and footer.
+- Compact page/panel spacing and a bounded scene height avoid stretching the canvas
+  to match long evidence panels. Longer condition explanations live in query details.
+- Tables keep local horizontal scrolling; type is never reduced to force columns to fit.
+- Frame labels sit outside thumbnail images, retaining readable RGB/depth identities.
+
+Second-round follow-up (2026-09-10):
+- Explicit S/G buttons alone call beginEndpointEdit. Entering an edit brings an
+  off-screen canvas into view and focuses it with preventScroll; an already visible
+  canvas stays in place. A repeated selection exits without requesting a scroll.
+  Generic mode changes, reset and Escape do not request navigation.
+- One live mode hint describes the current interaction. Legends and line meanings
+  remain visible; native layer details hold point-cloud and difference explanations.
+- Difference availability reuses chooseBaseline and endpoint validation, including
+  diagnostic failures. Its local description reports the unavailable reason or
+  current pairing and keeps the distinction between disagreement and oracle error.

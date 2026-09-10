@@ -182,3 +182,15 @@ dependency licenses are retained separately. No remote repository, push or deplo
 - ZIP inspection confirmed tests present and data, models, artifacts, third_party,
   .venv, node_modules and .git excluded. Final bundle entries checked against current
   source bytes after documentation/style updates. No publication or remote operation.
+
+## Final local handoff refresh — 2026-09-10
+
+- Refreshed the first-visit viewer changes, 16 px minimum typography, explicit
+  endpoint navigation and compact layer explanations. Detailed browser evidence
+  and untested cases are in docs/ux/viewer-improvement-acceptance.md.
+- Fresh workspace regression: Python 29 passed; Node 14 passed; viewer app syntax
+  checked. No model inference, dependency upgrade or research result regeneration.
+- Source handoff validation is recorded separately in artifacts/handoff-final/validation.json
+  so the ZIP can match final source documentation without embedding its own hash.
+- Colab/GPU execution, real touch, 200% zoom and full screen-reader coverage remain
+  unverified. This delivery is the local CPU MVP; no publication or remote action.

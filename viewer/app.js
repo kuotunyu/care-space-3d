@@ -4,12 +4,14 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { bfs, parseEndpoint, stateLookup } from './planning.js';
 import { createRenderScheduler, disposeObject } from './rendering.js';
 import { diagnose, chooseBaseline } from './diagnostics.js';
+import { canPlaceEndpoint, isBaselineQuery } from './interaction.js';
 
 const moduleStartedAt=performance.now();
 const COLORS={free:0x117d83,occupied:0xd66750,unknown:0xc19b43,narrow:0x886aa8,ink:0x152f43};
 const $=id=>document.getElementById(id);
 const ui=Object.fromEntries(['loadState','caseSelect','caseDescription','methodSelect','reconMode','oracleMode','sourceNote','radius','radiusValue','heightValue','assumption','pickStart','pickGoal','startX','startZ','goalX','goalZ','frameCount','frameCountValue','frameStrip','viewport','statusDot','resultStatus','resultReason','clearance','pathLength','resolution','metrics','comparisonBody','sceneId','splitFamily','gridShape','observationSection','frameDialog','frameDialogTitle','closeFrameDialog','dialogRgb','dialogDepth','dialogDepthMissing','dialogDepthLabel','resetQuery','frameSelection','viewSource','stageStatus','fitView','topView','showPoints','coverageBar','coverageSummary','pathLengthLabel'].map(id=>[id,$(id)]));
-let study,currentCase,currentMethod,pick='start',oracle=false,frameLimit=0;
+Object.assign(ui,Object.fromEntries(['cameraMode','interactionHint','querySummary','queryMode','queryFeedback','resultDetails'].map(id=>[id,$(id)])));
+let study,currentCase,currentMethod,pick='browse',oracle=false,frameLimit=0,down,querySignature;
 let scene,camera,renderer,controls,content,pathLine,markers,raycaster,mouse,groundPlane,oracleObject;
 let contentRevision=0,observedPoints,requestRender=()=>{},renderCount=0;
 let differenceOverlay=null,normalFloor=[];
@@ -45,6 +47,7 @@ async function loadStudy(){
 function setFatal(message){ui.loadState.textContent='資料載入失敗';ui.loadState.style.borderColor='#d66750';document.body.classList.add('fatal');const p=document.createElement('p');p.className='empty';p.textContent=message;document.querySelector('.workbench').append(p)}
 
 function selectCase(index){
+  setInteractionMode('browse');
   currentCase=study.cases[index];
   $('inspectDa3').hidden=!currentCase.methods?.some(m=>m.id==='da3-all');
   $('sceneTitle').textContent=currentCase.title||currentCase.id;
@@ -72,6 +75,7 @@ function init3D(){
   camera=new THREE.PerspectiveCamera(42,1,.02,100);camera.position.set(5,5,5);
   renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;ui.viewport.append(renderer.domElement);
   controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;
+  setInteractionMode('browse');
   scene.add(new THREE.HemisphereLight(0xffffff,0x91a4af,2.4));const sun=new THREE.DirectionalLight(0xffffff,2);sun.position.set(3,7,4);scene.add(sun);
   content=new THREE.Group();markers=new THREE.Group();scene.add(content,markers);raycaster=new THREE.Raycaster();mouse=new THREE.Vector2();groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0);
   requestRender=createRenderScheduler(()=>{
@@ -86,9 +90,8 @@ function init3D(){
   new ResizeObserver(resize).observe(ui.viewport);
   renderer.domElement.addEventListener('pointerdown',beginPointer);
 }
-let down;
-function beginPointer(e){down=[e.clientX,e.clientY];renderer.domElement.addEventListener('pointerup',endPointer,{once:true})}
-function endPointer(e){if(!currentMethod||e.button!==0||Math.hypot(e.clientX-down[0],e.clientY-down[1])>5)return;const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);const p=new THREE.Vector3();if(raycaster.ray.intersectPlane(groundPlane,p)){setEndpoint(pick,[snap(p.x),snap(p.z)]);replan()}}
+function beginPointer(e){if(!canPlaceEndpoint(pick))return;down=[e.clientX,e.clientY];renderer.domElement.addEventListener('pointerup',endPointer,{once:true})}
+function endPointer(e){if(!canPlaceEndpoint(pick)||!down)return;const origin=down;down=null;if(!currentMethod||e.button!==0||Math.hypot(e.clientX-origin[0],e.clientY-origin[1])>5)return;const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);const p=new THREE.Vector3();if(raycaster.ray.intersectPlane(groundPlane,p)){setEndpoint(pick,[snap(p.x),snap(p.z)]);replan();setInteractionMode('browse')}}
 function resize(){const w=ui.viewport.clientWidth,h=ui.viewport.clientHeight;if(!w||!h)return;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);requestRender()}
 
 function renderScene(){
@@ -126,18 +129,28 @@ function addFrameMarkers(){const selected=new Set(currentMethod.selected_frames|
 function addNarrowBand(){const [nx,nz]=currentCase.shape,res=currentCase.resolution,states=currentMethod.states||[],obstacles=[],cells=[];for(let x=0;x<nx;x++)for(let z=0;z<nz;z++)if(states[x*nz+z]===1)obstacles.push([x,z]);for(let x=0;x<nx;x++)for(let z=0;z<nz;z++){if(states[x*nz+z]!==0)continue;let clearance=Math.min((x+1)*res,(z+1)*res,(nx-x)*res,(nz-z)*res);for(const [ox,oz] of obstacles)clearance=Math.min(clearance,Math.hypot((x-ox)*res,(z-oz)*res));clearance=Math.max(0,clearance-res/Math.SQRT2);if(clearance>=.3&&clearance<.6)cells.push([x,z])}if(!cells.length)return;const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(res*.72,.012,res*.72),new THREE.MeshStandardMaterial({color:COLORS.narrow,transparent:true,opacity:.88}),cells.length),m=new THREE.Matrix4();cells.forEach(([x,z],i)=>mesh.setMatrixAt(i,m.makeTranslation(currentCase.bounds[0]+(x+.5)*res,.052,currentCase.bounds[1]+(z+.5)*res)));content.add(mesh)}
 
 function replan(){
+  updateQuerySummary();
   if(!currentMethod)return;
   const start=getEndpoint('start'),goal=getEndpoint('goal'),radius=+ui.radius.value;
   for(const kind of ['start','goal'])for(const axis of ['X','Z'])ui[kind+axis].setAttribute('aria-invalid',String(!getEndpoint(kind)));
   ui.radiusValue.textContent=fmtM(radius);
   if(!start||!goal){
     drawPath([],'unknown');for(const child of [...markers.children])disposeObject(child);
-    ui.resultStatus.textContent=ui.stageStatus.textContent='待輸入';ui.resultReason.textContent='請填入完整、有限的 X / Z 座標；空白不會自動當成 0。';
+    ui.resultStatus.textContent=ui.stageStatus.textContent='待輸入';ui.resultReason.textContent='請填入完整、有限的 X / Z 座標；空白不會自動當成 0。';ui.resultDetails.textContent='座標未完成時暫停通行判定。';
     ui.statusDot.style.background='#607585';ui.stageStatus.dataset.status='invalid';
     ui.clearance.textContent=ui.pathLength.textContent='—';updateDiagnostics();requestRender();return;
   }
-  const blocked=stateLookup(currentCase,currentMethod.states,radius),s=worldCell(start),g=worldCell(goal);let status='unknown',path=[],reason='端點或路徑穿越未觀測區域。';
-  if(!s||!g||blocked(s[0],s[1])===1||blocked(g[0],g[1])===1){status='blocked';reason='端點位於障礙膨脹區或研究邊界外。'}else{path=bfs(s,g,v=>v===0,blocked);if(path.length){status='passable';reason='已知自由空間存在四鄰接通路。'}else{const optimistic=bfs(s,g,v=>v!==1,blocked);if(!optimistic.length){status='blocked';reason='即使允許穿越未知區，仍無可連通路徑。'}else{path=optimistic}}}
+  const blocked=stateLookup(currentCase,currentMethod.states,radius),s=worldCell(start),g=worldCell(goal);let status='unknown',path=[],reason='目前觀測不足，還不能確認這條路是否可通行。',details='端點或路徑穿越未觀測區域；虛線為候選路線。';
+  if(!s||!g||blocked(s[0],s[1])===1||blocked(g[0],g[1])===1){
+    status='blocked';reason='起點或終點位於障礙範圍或研究邊界外。';details='端點位於依目前半徑計算的障礙膨脹區或研究邊界外。';
+  }else{
+    path=bfs(s,g,v=>v===0,blocked);
+    if(path.length){status='passable';reason='在目前觀測與模型條件下，找到可連通的自由路徑。';details='已知自由空間存在四鄰接通路。'}else{
+      const optimistic=bfs(s,g,v=>v!==1,blocked);
+      if(!optimistic.length){status='blocked';reason='即使把未知區暫視為可走，仍找不到連通路徑。';details='即使允許穿越未知區，仍無可連通路徑。'}else{path=optimistic}
+    }
+  }
+  ui.resultDetails.textContent=`${details} ${study.body?.assumption||'判定限於目前觀測、重建網格與圓柱通行模型。'}`;
   const worldPath=path.map(([ix,iz])=>cellWorld(ix,iz));drawPath(worldPath,status);drawMarkers(start,goal);
   const clearance=status==='passable'&&path.length?pathClearance(path):null;ui.resultStatus.textContent={passable:'可通行',blocked:'阻斷',unknown:'未知'}[status];ui.resultReason.textContent=reason;ui.statusDot.style.background={passable:'#117d83',blocked:'#d66750',unknown:'#c19b43'}[status];ui.clearance.textContent=clearance==null?'—':fmtM(clearance);ui.pathLength.textContent=worldPath.length?fmtM((worldPath.length-1)*currentCase.resolution):'—';
   ui.stageStatus.textContent=ui.resultStatus.textContent;ui.stageStatus.dataset.status=status;
@@ -151,6 +164,7 @@ function updateDiagnostics(){
   const baseline=currentMethod&&chooseBaseline(currentCase.methods,currentMethod),start=getEndpoint('start'),goal=getEndpoint('goal');
   if(!baseline)$('showDifference').checked=false;
   $('showDifference').disabled=!baseline||!start||!goal;
+  $('differenceHint').textContent=!baseline?'此方法目前沒有可配對的基線，無法顯示方法差異。':!start||!goal?'請先填入完整端點，才能顯示方法差異。':`配對：${baseline.label} → ${currentMethod.label}。方法分歧不等於真值誤差。`;
   if(!baseline||!start||!goal){
     $('diagnosticPair').textContent=!currentMethod?'無方法資料':!baseline?'目前方法沒有可配對的 RGB-D 基線；可切換 DA3 或選樣方法。':'請先填入完整端點。';
     $('diagnosticDetails').replaceChildren();requestRender();return;
@@ -177,7 +191,7 @@ function updateDiagnostics(){
       for(const object of normalFloor)object.visible=false;
       $('normalLegend').hidden=true;$('differenceLegend').hidden=false;$('differenceSource').hidden=false;
     }
-  }catch(error){$('diagnosticPair').textContent=`無法比較：${error.message}`;$('diagnosticDetails').replaceChildren();$('showDifference').disabled=true}
+  }catch(error){$('diagnosticPair').textContent=`無法比較：${error.message}`;$('diagnosticDetails').replaceChildren();$('showDifference').disabled=true;$('differenceHint').textContent=`目前無法顯示方法差異：${error.message}`}
   requestRender();
 }
 function pathClearance(path){const [nx,nz]=currentCase.shape,res=currentCase.resolution,states=currentMethod.states||[];let best=Infinity;for(const [x,z] of path){best=Math.min(best,(x+1)*res,(z+1)*res,(nx-x)*res,(nz-z)*res);for(let ox=0;ox<nx;ox++)for(let oz=0;oz<nz;oz++)if((states[ox*nz+oz]??-1)!==0)best=Math.min(best,Math.hypot((x-ox)*res,(z-oz)*res))}return Math.max(0,best-res/Math.SQRT2)}
@@ -212,8 +226,9 @@ function renderMetrics(){
   ui.coverageSummary.textContent=total?`自由 ${percent(fractions[0])} · 障礙 ${percent(fractions[1])} · 未知 ${percent(fractions[2])}`:'尚無網格證據';
   ui.frameSelection.textContent=`重建使用 ${currentMethod.selected_frames?.length??0} / ${currentCase.frames?.length??0} 張影格`;
 }
-function renderComparison(){ui.comparisonBody.innerHTML=(currentCase.methods||[]).map((m,index)=>{const x=m.metrics||{},status={passable:'可通',blocked:'阻斷',unknown:'未知'}[m.result?.status]||'—';return `<tr class="${m===currentMethod?'current':''}"><td><button type="button" data-method-index="${index}" aria-pressed="${m===currentMethod}">${esc(m.label||m.id)}</button></td><td class="status-${esc(m.result?.status)}">${status}</td><td>${m.selected_frames?.length??'—'}</td><td>${percent(x.observed_fraction)}</td><td>${compactNumber(x.runtime_seconds)}</td><td>${x.depth_mae_m==null?'—':compactNumber(x.depth_mae_m)+' m'}</td></tr>`}).join('')}
+function renderComparison(){ui.comparisonBody.innerHTML=(currentCase.methods||[]).map((m,index)=>{const x=m.metrics||{},status={passable:'可通行',blocked:'阻斷',unknown:'未知'}[m.result?.status]||'—';return `<tr class="${m===currentMethod?'current':''}"><td><button type="button" data-method-index="${index}" aria-pressed="${m===currentMethod}">${esc(m.label||m.id)}</button></td><td class="status-${esc(m.result?.status)}">${status}</td><td>${m.selected_frames?.length??'—'}</td><td>${percent(x.observed_fraction)}</td><td>${compactNumber(x.runtime_seconds)}</td><td>${x.depth_mae_m==null?'—':compactNumber(x.depth_mae_m)+' m'}</td></tr>`}).join('')}
 function renderEmptyMethod(){
+  updateQuerySummary();ui.resultDetails.textContent='沒有方法網格可供計算。';
   drawPath([],'unknown');for(const child of [...markers.children])disposeObject(child);
   ui.resultStatus.textContent=ui.stageStatus.textContent='無方法資料';ui.stageStatus.dataset.status='invalid';
   ui.resultReason.textContent='此案例沒有可檢視的重建方法。請切換其他案例。';ui.statusDot.style.background='#607585';
@@ -230,23 +245,68 @@ function bind(){
   ui.comparisonBody.addEventListener('click',e=>{const button=e.target.closest('[data-method-index]');if(button)selectMethod(+button.dataset.methodIndex)});
   ui.radius.addEventListener('input',()=>replan());
   ui.frameCount.addEventListener('input',()=>{frameLimit=+ui.frameCount.value;renderFrames();renderScene();replan()});
-  ui.resetQuery.addEventListener('click',()=>{ui.radius.value=study.body.radius;setEndpoint('start',currentMethod.result.start);setEndpoint('goal',currentMethod.result.goal);replan()});
+  ui.resetQuery.addEventListener('click',restoreExperimentQuery);
   ui.fitView.addEventListener('click',()=>fitCamera());ui.topView.addEventListener('click',()=>fitCamera(true));
   ui.showPoints.addEventListener('change',()=>{if(observedPoints)observedPoints.visible=ui.showPoints.checked;requestRender()});
   for(const id of ['startX','startZ','goalX','goalZ'])ui[id].addEventListener('change',()=>replan());
-  ui.pickStart.addEventListener('click',()=>setPick('start'));ui.pickGoal.addEventListener('click',()=>setPick('goal'));
+  ui.pickStart.addEventListener('click',()=>beginEndpointEdit('start'));ui.pickGoal.addEventListener('click',()=>beginEndpointEdit('goal'));
+  ui.cameraMode.addEventListener('click',()=>setInteractionMode(pick==='camera'?'browse':'camera'));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')setInteractionMode('browse')});
   ui.reconMode.addEventListener('click',()=>setOracle(false));ui.oracleMode.addEventListener('click',()=>setOracle(true));
   ui.frameStrip.addEventListener('click',e=>{const button=e.target.closest('[data-frame-id]');if(button)openFrameDialog(+button.dataset.frameId)});
   ui.closeFrameDialog.addEventListener('click',()=>ui.frameDialog.close());
+  $('previewRgb').addEventListener('click',()=>setFramePreview('rgb'));
+  $('previewDepth').addEventListener('click',()=>setFramePreview('depth'));
   ui.viewport.addEventListener('keydown',e=>{
-    if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)||!currentMethod)return;
+    if(!canPlaceEndpoint(pick)||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)||!currentMethod)return;
     e.preventDefault();const p=getEndpoint(pick),d=currentCase.resolution;if(!p)return;
     p[0]+=e.key==='ArrowLeft'?-d:e.key==='ArrowRight'?d:0;p[1]+=e.key==='ArrowUp'?-d:e.key==='ArrowDown'?d:0;
     setEndpoint(pick,p);replan();
   });
 }
-function openFrameDialog(id){const f=(currentCase.frames||[]).find(frame=>frame.id===id);if(!f)return;const learned=currentMethod.id.startsWith('da3-'),depth=learned?f.learned_depth_preview:f.depth_preview,label=learned?'預測深度':'感測深度';ui.frameDialogTitle.textContent=`影格 ${id} · ${currentMethod.label||currentMethod.id}`;ui.dialogRgb.src=resolveArtifact(f.rgb);ui.dialogRgb.alt=`影格 ${id} RGB 大圖`;ui.dialogDepthLabel.textContent=label;ui.dialogDepth.hidden=!depth;ui.dialogDepthMissing.hidden=!!depth;if(depth){ui.dialogDepth.src=resolveArtifact(depth);ui.dialogDepth.alt=`影格 ${id} ${label}大圖`}else{ui.dialogDepth.removeAttribute('src');ui.dialogDepth.alt=''}ui.frameDialog.showModal()}
-function setPick(v){pick=v;ui.pickStart.classList.toggle('active',v==='start');ui.pickGoal.classList.toggle('active',v==='goal');ui.pickStart.setAttribute('aria-pressed',String(v==='start'));ui.pickGoal.setAttribute('aria-pressed',String(v==='goal'))}
+function setFramePreview(kind){
+  ui.frameDialog.dataset.preview=kind;
+  $('previewRgb').setAttribute('aria-pressed',String(kind==='rgb'));
+  $('previewDepth').setAttribute('aria-pressed',String(kind==='depth'));
+}
+function openFrameDialog(id){const f=(currentCase.frames||[]).find(frame=>frame.id===id);if(!f)return;const learned=currentMethod.id.startsWith('da3-'),depth=learned?f.learned_depth_preview:f.depth_preview,label=learned?'預測深度':'感測深度';ui.frameDialogTitle.textContent=`影格 F${id} · ${currentMethod.label||currentMethod.id}`;ui.dialogRgb.src=resolveArtifact(f.rgb);ui.dialogRgb.alt=`影格 ${id} RGB 大圖`;ui.dialogDepthLabel.textContent=label;$('previewDepth').textContent=label;ui.dialogDepth.hidden=!depth;ui.dialogDepthMissing.hidden=!!depth;if(depth){ui.dialogDepth.src=resolveArtifact(depth);ui.dialogDepth.alt=`影格 ${id} ${label}大圖`}else{ui.dialogDepth.removeAttribute('src');ui.dialogDepth.alt=''}setFramePreview('rgb');ui.frameDialog.showModal()}
+function beginEndpointEdit(kind){
+  if(!canPlaceEndpoint(kind))return;
+  if(pick===kind){setInteractionMode('browse');return}
+  setInteractionMode(kind);
+  const rect=ui.viewport.getBoundingClientRect();
+  if(rect.top<0||rect.bottom>window.innerHeight)ui.viewport.scrollIntoView({block:'center',behavior:'auto'});
+  ui.viewport.focus({preventScroll:true});
+}
+function setInteractionMode(mode){
+  pick=['browse','camera','start','goal'].includes(mode)?mode:'browse';
+  down=null;renderer.domElement.removeEventListener('pointerup',endPointer);
+  controls.enabled=pick==='camera';
+  renderer.domElement.style.touchAction=pick==='camera'?'none':'auto';
+  renderer.domElement.style.cursor=canPlaceEndpoint(pick)?'crosshair':pick==='camera'?'grab':'auto';
+  ui.viewport.dataset.interactionMode=pick;
+  for(const [button,active] of [[ui.pickStart,pick==='start'],[ui.pickGoal,pick==='goal'],[ui.cameraMode,pick==='camera']]){
+    button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));
+  }
+  ui.cameraMode.textContent=pick==='camera'?'完成操作':'操作 3D';
+  ui.interactionHint.textContent={browse:'瀏覽模式：可直接捲頁；旋轉模型請選「操作 3D」。',camera:'操作 3D：拖曳旋轉、捲輪縮放；完成操作或 Esc 退出。',start:'設定起點 S：點地面放置，或用方向鍵微調；Esc 退出。',goal:'設定終點 G：點地面放置，或用方向鍵微調；Esc 退出。'}[pick];
+}
+function updateQuerySummary(){
+  if(!currentCase)return;
+  const radius=+ui.radius.value,start=getEndpoint('start'),goal=getEndpoint('goal');
+  const signature=JSON.stringify([currentCase.id,currentMethod?.id,oracle,ui.radius.value,...['startX','startZ','goalX','goalZ'].map(id=>ui[id].value)]);
+  if(signature!==querySignature)ui.queryFeedback.textContent='';
+  querySignature=signature;
+  ui.querySummary.textContent=`${currentCase.title||currentCase.id} · ${currentMethod?.label||currentMethod?.id||'無方法資料'} · ${oracle?'標註參考（判定仍使用重建網格）':'重建證據'} · 半徑 ${fmtM(radius)}`;
+  ui.queryMode.textContent=!currentMethod?'無方法資料':!start||!goal||!Number.isFinite(radius)?'待完成輸入':isBaselineQuery({radius,start,goal},{radius:study.body?.radius,start:currentMethod.result?.start,goal:currentMethod.result?.goal})?'實驗預設':'自訂查詢';
+}
+function restoreExperimentQuery(){
+  if(!currentMethod)return;
+  ui.radius.value=study.body.radius;
+  setEndpoint('start',currentMethod.result.start);setEndpoint('goal',currentMethod.result.goal);
+  setInteractionMode('browse');replan();
+  ui.queryFeedback.textContent=`已還原實驗端點與半徑（${fmtM(+ui.radius.value)}）。`;
+}
 function setOracle(v){oracle=v;ui.reconMode.classList.toggle('active',!v);ui.oracleMode.classList.toggle('active',v);ui.oracleMode.setAttribute('aria-pressed',String(v));ui.reconMode.setAttribute('aria-pressed',String(!v));ui.sourceNote.textContent=v?'完整來源幾何僅供視覺對照；通行判定仍使用所選方法的重建網格。':'顯示有限觀測所重建的證據。';ui.viewSource.textContent=v?'參考幾何載入中…':'重建證據 · 已知相機姿態';ui.viewSource.classList.toggle('reference',v);renderScene();replan()}
 function setEndpoint(kind,p){ui[kind+'X'].value=(+p[0]).toFixed(2);ui[kind+'Z'].value=(+p[1]).toFixed(2)}
 function getEndpoint(kind){return parseEndpoint(ui[kind+'X'].value,ui[kind+'Z'].value)}
