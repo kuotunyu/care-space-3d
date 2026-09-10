@@ -1,6 +1,6 @@
 # 專案狀態與發布範圍
 
-2026-09-11：第一版完成。kuotunyu/care-space-3d目前為私人repository；沒有公開部署。
+2026-09-11：第一版完成。kuotunyu/care-space-3d已依使用者授權改為公開repository；沒有公開部署。
 
 ## 完成狀態
 
@@ -25,6 +25,6 @@ GPU、觸控、讀屏、200%縮放及完整雲端異常恢復仍未完整驗證�
 候選公開內容是程式、文件、測試、下載腳本與原創概念SVG；不含家具資料、權重、
 研究artifacts及Colab帳號截圖。示意圖不是實驗截圖。
 [第三方材料](../THIRD_PARTY_NOTICES.md)不適用本專案MIT；ReplicaCAD標示差異見[sources.md](sources.md)。
-改為public仍需確認，目前沒有變更可見性或建立網站部署。
+2026-09-11已改為public；沒有建立網站部署。
 
 [文件索引](README.md) · [作品首頁](../README.md) · [驗收紀錄](verification.md)

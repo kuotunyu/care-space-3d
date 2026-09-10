@@ -9,7 +9,7 @@
 
 本機 CPU 端到端實作完成；Colab CPU 重現與三案例展示已有輸出及截圖驗收。
 
-Repository 已建立並維持私人；目前沒有公開部署。
+原創程式採 MIT 授權；目前沒有公開線上部署。
 
 [三分鐘展示](docs/demo-guide.md) · [實驗結果](docs/results.md) · [安裝與重現](docs/reproduction.md) · [Colab 啟動指南](docs/colab-start-here.md)
 

@@ -254,3 +254,12 @@ Created kuotunyu/care-space-3d as private and pushed local work/local-mvp to mai
 No dataset, weights, research artifacts or user screenshots were uploaded.
 No public deployment or visibility change was performed. Earlier no-remote notes
 record the state before this explicitly authorized handoff.
+
+## Public repository publication — 2026-09-11
+
+After the user agreed to the explicit private-to-public proposal, verified local
+HEAD and origin/main matched at 51e2385, the worktree was clean, and tracked paths
+excluded datasets, models, artifacts and environments. Changed repository visibility
+to public. GitHub API confirmed private=false, visibility=public and MIT license.
+No Pages/site deployment or dataset/weight upload was performed. Earlier private
+status entries are historical, not the current repository visibility.
