@@ -1,4 +1,4 @@
-# 安裝、操作與重現
+# 安裝與操作指南
 
 [回到專案首頁](../README.md) · [三分鐘展示](demo-guide.md)
 
@@ -38,7 +38,7 @@ node --test tests/browser-*.test.mjs
 結果在 [方法差異診斷](diagnostics.md) 與 `artifacts/diagnostics.json`，含完整矩陣、
 資料與程式 SHA256；介面直接用同一套程式計算當前查詢，不載入過期診斷快取。
 
-## 從空環境重現
+## 首次安裝與執行
 
 以下只供第一次建立新工作目錄；已有本專案的人使用上方「現有工作目錄直接執行」，不需重新下載或重跑研究。
 需 Git、curl、uv、Node/npm；uv 會取得 Python 3.11.15。使用 **CPU**，不需 GPU 或 Colab。

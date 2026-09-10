@@ -53,7 +53,7 @@ RGB-D 與 DA3 深度分開實驗，共用融合及規劃邏輯；K 與已知姿�
 提供正常通道、家具阻斷及觀測不足案例，保存實驗結果與互動查詢分開呈現。
 完整結果、設計與驗收紀錄收錄於[技術文件](docs/README.md)。
 
-依[重現指南](docs/reproduction.md)可在本機或 Colab 啟動；資料與單一 checkpoint 由腳本取得，目前沒有公開線上 demo。
+依[安裝與操作指南](docs/reproduction.md)可在本機或 Colab 啟動；資料與單一 checkpoint 由腳本取得，目前沒有公開線上 demo。
 
 ---
 
