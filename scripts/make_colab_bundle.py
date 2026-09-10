@@ -40,7 +40,7 @@ PYTHON = str(ENV / 'bin/python')
 subprocess.run([PYTHON, '-m', 'pip', 'install', '-r', str(PROJECT/'requirements-cpu.lock')], check=True)
 subprocess.run([PYTHON, '-m', 'pip', 'install', '--no-deps', '-e', str(PROJECT)], check=True)
 """),cell("code","""# Downloads resume; existing matching predictions are reused.
-for script in ['fetch_assets.py', 'fetch_model.py', 'run_study.py', 'run_learning.py', 'build_report.py']:
+for script in ['fetch_assets.py', 'fetch_model.py', 'run_study.py', 'run_learning.py', 'build_report.py', 'build_depth_audit.py']:
     subprocess.run([PYTHON, str(PROJECT/'scripts'/script)], cwd=PROJECT, check=True)
 print((PROJECT/'docs/results.md').read_text())
 """),cell("code","""# Optional notebook-local viewer; uses the same static frontend.

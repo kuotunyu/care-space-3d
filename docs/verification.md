@@ -89,3 +89,29 @@ dependency licenses are retained separately. No remote repository, push or deplo
 - Original study remains byte-identical: SHA256
   `e368c46e4eda63f21eb17214b95a3f6b66ace2117b91a723b6b63d8b2895a4c2`.
   No model inference, threshold tuning, new dependencies or GPU work in this addition.
+
+## Cached depth source audit — 2026-09-10
+
+- Python: 24 tests passed; Node: 11 tests passed with `node --test tests/browser-*.test.mjs`.
+  `npm test` is not configured; the direct Node runner is the verified command.
+  JavaScript syntax and `git diff --check` passed.
+- All 49 cached frames across three evaluation cases were traced without new model
+  inference. Each case's occupied endpoint union exactly matched its saved DA3 grid;
+  no audit failures. Study SHA256 remained unchanged from the value above.
+- Pinned upstream CPU utility checks: focal/300 maximum difference 0 m; camera-Z
+  unprojection maximum world-coordinate difference 1.7763568394002505e-15 m.
+  No model weights were loaded for these checks.
+- Normal-case baseline-free to DA3-occupied conflicts: 1,872 cells. Only 89 had
+  exclusively true-floor support; 1,783 had non-floor support. Floor lift alone is
+  insufficient to explain the discrepancy. 1,081 conflict cells had occupied endpoint
+  support in only one frame; this is descriptive evidence, not a validated removal rule.
+- Five audit regressions cover floor/non-floor/no-reference attribution, invalid depth,
+  shared-cell contributors, per-frame voting and rejection of incompatible saved masks.
+- Review identified an image provenance gap; report pictures now come directly from
+  audited arrays, with filenames bound to observation, prediction and source hashes.
+  Reference-assisted masks are used only for post-inference reporting.
+- Browser report: study fingerprint accepted, all 30 images loaded at native width 224,
+  no page horizontal overflow, no browser errors; default viewport visually inspected.
+  Report URL was opened directly. Automated navigation via the viewer anchor was not
+  confirmed, so this check does not claim click-through navigation coverage.
+- Colab launcher includes the same audit builder. The notebook has not been run in Colab.

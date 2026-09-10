@@ -50,6 +50,7 @@ npm ci
 .venv/Scripts/python scripts/run_study.py
 .venv/Scripts/python scripts/run_learning.py
 .venv/Scripts/python scripts/build_report.py
+.venv/Scripts/python scripts/build_depth_audit.py
 node scripts/build_diagnostics.mjs
 .venv/Scripts/python -m pytest -q
 ./scripts/serve.ps1
@@ -73,6 +74,10 @@ GitHub repo 建立、push 或公開部署。
 見 [自動生成結果報告](docs/results.md)、[精簡設計](docs/design.md)、
 [原始碼與資料授權](docs/sources.md)、[DA3 尺度核對](docs/da3-audit.md)、
 [失敗紀錄](docs/failure-log.md)。
+
+[深度來源追溯](docs/depth-audit.md) 核對官方尺度／座標工具，並從快取深度追溯障礙格的
+影格與像素來源。執行上述 `build_depth_audit.py` 後，可從工作台開啟含 RGB、參考／預測
+深度和誤差圖的報告。這是使用合成真值的事後診斷，沒有把真值遮罩送入重建或規劃。
 
 - 全部 RGB-D 的三案例得到可通行／阻斷／未知。DA3 保留開放通道誤判阻斷的負例。
 - 每個方法僅 3 個固定 evaluation 查詢，變體共享房間/家具，沒有獨立家庭泛化證據。
