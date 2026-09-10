@@ -1,4 +1,4 @@
-# CareSpace 3D 本機實驗報告
+# CareSpace 3D 受控實驗報告
 
 固定模型：半徑 0.30 m、高 1.20 m 的直立圓柱；平坦已知支撐面。
 高度分析忽略 y<0.10 m 接觸層；高度向上取整到體素邊界。不是完整輪椅模型，也不是長者安全驗證。
@@ -71,9 +71,9 @@ DA3 對照使用相同全部／固定間隔影格，沒有拿 RGB-D 覆蓋選樣
 }
 ```
 
-RTX 4090 預檢為 22135/24564 MiB、99% 使用中，因此本次採 CPU float32、2 執行緒；沒有停止其他程序或修改 Ubuntu-bench。
+運算裝置、精度與執行緒以以上 learning_execution 記錄為準；未記錄的主機型號與 GPU 占用不作推定。
 峰值顯存為 null（CPU 不適用），不是 0 MB 的 GPU 測量。模型權重載入/首次驗證開銷包含在當次 wall time，個別影格時間含前處理與 forward。
-Viewer JSON：4.32 MB；初始 WebGL 畫面與互動由瀏覽器實際檢視。
+Viewer JSON：4.32 MB；此數值為資料檔案大小，不代表已完成瀏覽器互動驗證。
 
 授權：ReplicaCAD 官方網頁 CC BY 4.0 與此 revision 的 LICENSE.txt CC BY-NC 4.0 不一致，採較嚴格的本機非商業研究條件。詳見 docs/sources.md。
-Colab 啟動檔共用相同核心，但本次沒有執行 Colab，也未量測任何 Colab GPU 效能。
+報告產生器不判定執行平台為本機或 Colab；平台與操作驗收需另附執行紀錄。CPU 結果不能作為 Colab GPU 效能。

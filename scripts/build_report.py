@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 a=json.loads((ROOT/"artifacts/study.json").read_text(encoding="utf8"))
 label={"passable":"可通行","blocked":"阻斷","unknown":"未知"}
-rows=["# CareSpace 3D 本機實驗報告", "", "固定模型：半徑 0.30 m、高 1.20 m 的直立圓柱；平坦已知支撐面。",
+rows=["# CareSpace 3D 受控實驗報告", "", "固定模型：半徑 0.30 m、高 1.20 m 的直立圓柱；平坦已知支撐面。",
 "高度分析忽略 y<0.10 m 接觸層；高度向上取整到體素邊界。不是完整輪椅模型，也不是長者安全驗證。", "",
 "本報告由 artifacts/study.json 自動生成。資料為程式化房間與原尺度 ReplicaCAD 家具，重新著色；未使用原始公寓布局。",
 "3 個 evaluation 配置共用房間與資產，只能視為同一受控實驗家族，不能當作 3 個獨立家庭。", "",
@@ -40,10 +40,10 @@ rows += ["", "錯誤放行：預測可通行、oracle 判阻斷。兩個分母�
 "家具改動會改 scene ID、生成新觀測、基線、oracle 與模型快取；不同方法不共享可變的舊幾何。",
 "細薄物件、透明/反射、坡道、門扇動態、人體動作與接觸層障礙不在第一版模型內。預訓練資料重疊未知。", "",
 "## 執行記錄", "", "```json",json.dumps(a.get("learning_execution",{}),ensure_ascii=False,indent=2),"```", "",
-"RTX 4090 預檢為 22135/24564 MiB、99% 使用中，因此本次採 CPU float32、2 執行緒；沒有停止其他程序或修改 Ubuntu-bench。",
+"運算裝置、精度與執行緒以以上 learning_execution 記錄為準；未記錄的主機型號與 GPU 占用不作推定。",
 "峰值顯存為 null（CPU 不適用），不是 0 MB 的 GPU 測量。模型權重載入/首次驗證開銷包含在當次 wall time，個別影格時間含前處理與 forward。",
-f"Viewer JSON：{(ROOT/'artifacts/study.json').stat().st_size/1e6:.2f} MB；初始 WebGL 畫面與互動由瀏覽器實際檢視。", "",
+f"Viewer JSON：{(ROOT/'artifacts/study.json').stat().st_size/1e6:.2f} MB；此數值為資料檔案大小，不代表已完成瀏覽器互動驗證。", "",
 "授權：ReplicaCAD 官方網頁 CC BY 4.0 與此 revision 的 LICENSE.txt CC BY-NC 4.0 不一致，採較嚴格的本機非商業研究條件。詳見 docs/sources.md。",
-"Colab 啟動檔共用相同核心，但本次沒有執行 Colab，也未量測任何 Colab GPU 效能。"]
+"報告產生器不判定執行平台為本機或 Colab；平台與操作驗收需另附執行紀錄。CPU 結果不能作為 Colab GPU 效能。"]
 (ROOT/"docs/results.md").write_text("\n".join(rows)+"\n",encoding="utf8")
 print("Wrote docs/results.md from actual study results")

@@ -194,3 +194,20 @@ dependency licenses are retained separately. No remote repository, push or deplo
   so the ZIP can match final source documentation without embedding its own hash.
 - Colab/GPU execution, real touch, 200% zoom and full screen-reader coverage remain
   unverified. This delivery is the local CPU MVP; no publication or remote action.
+
+## Colab CPU execution — user-supplied evidence
+
+User supplied first-cell output: managed Python 3.11.15, pinned CPU dependencies,
+29 tests passed in 6.51 s and INSTALL_CHECK_OK. The second-cell report shows
+learning_execution wall_seconds=217.514126895, cache_hits=5, cache_misses=44,
+failures=[], CPU float32 / 2 threads and null peak VRAM. The evaluation RGB-D all
+cases reproduce passable/blocked/unknown; DA3 reproduces blocked/blocked/unknown.
+Reported MAE rounds to .299/.279 m normal, .405/.373 m moved, .460 m sparse.
+These are pasted execution results, not independent inspection of cloud files.
+The 217.51 s value is learning launcher wall time, not whole notebook duration.
+Colab viewer/browser remains unverified.
+
+The report generator incorrectly embedded historical local GPU occupancy, a claim
+that Colab was not executed, and browser verification. Removed those fixed claims;
+report now defers to saved execution metadata and separate platform/UI evidence.
+This correction changes report text only, not experiment data or inference.
