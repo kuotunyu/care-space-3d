@@ -6,7 +6,7 @@
 - [x] 對照 pipeline／run_learning／fusion／planning 與 Viewer 程式，確認資訊與執行邊界。
 - [x] 在 artifacts/diagrams 暫存來源並以固定 CLI 渲染，檢查字體、分支、箭頭與版面。
 - [x] 把已驗證 Mermaid 區塊放入 README、docs/design.md、docs/viewer-contract.md；Markdown 為唯一公開圖源。
-- [ ] 核對連結、重現包與 GitHub 實際顯示；記錄驗收後同步。
+- [x] 核對連結、重現包與 GitHub 實際顯示；記錄驗收後同步。
 
 架構圖保留合成觀測與 oracle 分流：完整幾何不能進入 DA3 推論。
 三態圖從已融合高度的平面格出發，先膨脹再做兩次四鄰接連通搜尋。

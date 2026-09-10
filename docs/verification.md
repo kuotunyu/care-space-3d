@@ -276,13 +276,10 @@ run_learning 及 Viewer app／planning；沒有改動研究或瀏覽器程式。
 三張皆成功渲染 PNG，檢查文字、分支、箭頭與版面；渲染的 .mmd 與公開 Markdown 區塊逐字一致。
 研究環境、Node 執行時相依及 Manim 環境沒有變更。
 
-維護時直接修改 Markdown 裡的圖，不需維護第二份公開圖片或安裝 Viewer 相依。
-可使用 Mermaid CLI 的 Markdown 輸入功能做本機預覽，例如：
+維護時直接修改 Markdown 裡的圖，不需維護第二份公開圖片。GitHub 閱讀不需安裝 CLI；
+這次本機渲染工具、設定與預覽圖只留在忽略的 artifacts 中，不納入使用者安裝流程。
 
-```powershell
-# 已有相同 CLI 環境與 Chrome 設定時，輸出僅作本機預覽。
-artifacts/mermaid-tooling/node_modules/.bin/mmdc.cmd -i README.md -o artifacts/diagrams/readme-preview.md -p artifacts/diagrams/puppeteer.json
-```
-
-GitHub 原生渲染的版本由平台控制；本機成功不等於所有 GitHub 版本都相容。
-使用基本 flowchart／sequenceDiagram，並另行檢查實際 repository 顯示。
+已在 GitHub commit 9a18294 的 README、design.md、viewer-contract.md 實際檢查原生渲染：
+三張均出現圖形、中文標籤及各判定分支，README 的展開檢視亦可使用。
+本次為桌面 Chrome 的顯示核對，不新增行動裝置或讀屏驗收宣稱。
+GitHub 渲染版本由平台控制，採用基本 flowchart／sequenceDiagram，後續改圖仍須重新檢查。
