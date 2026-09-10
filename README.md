@@ -5,7 +5,7 @@
 面向居家照護情境的 3D Vision 研究工作台，整合 **RGB-D 幾何重建、DA3 深度估計與互動通行分析**。
 選擇端點與移動物體尺寸，即可查看自由空間、障礙、未知區域，以及 **可通行／阻斷／未知** 三態判定。
 
-![Manim 動畫：遮擋保留未知，補足觀測後才確認通路](docs/media/unknown-space.gif)
+[![Manim 動畫：遮擋保留未知，補足觀測後才確認通路](docs/media/unknown-space.gif)](animations/README.md)
 
 *Manim 原理解說：未知 → 補足觀測 → 確認通路。原創 2D 場景，非研究成果截圖。*
 
