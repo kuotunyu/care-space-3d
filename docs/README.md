@@ -4,6 +4,7 @@
 
 | 目的 | 入口 |
 |---|---|
+| 動畫原理與渲染 | [Manim 解說](../animations/README.md) |
 | 展示 | [三分鐘流程](demo-guide.md) |
 | 安裝與重現 | [本機指南](reproduction.md)、[Colab完整路徑](colab-start-here.md) |
 | 設計與互動契約 | [設計](design.md)、[viewer契約](viewer-contract.md) |

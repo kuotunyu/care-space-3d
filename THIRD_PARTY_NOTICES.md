@@ -1,7 +1,8 @@
 # License scope and third-party materials
 
 The root MIT LICENSE applies to original CareSpace 3D source code, original
-project documentation and the original schematic in docs/media/passage-states.svg.
+project documentation, the original schematic in docs/media/passage-states.svg,
+and original Manim scenes/media in animations and docs/media/unknown-space.*.
 It does not relicense third-party datasets, model weights, libraries, their license
 texts or data-derived outputs. Refer to docs/sources.md and the upstream licenses.
 
@@ -16,3 +17,7 @@ texts or data-derived outputs. Refer to docs/sources.md and the upstream license
 The README schematic contains only original rectangles, routes and state labels.
 It is a conceptual illustration, not a screenshot, measured result or wheel-chair
 clearance certification. Its layouts are not ReplicaCAD assets.
+
+Manim Community 0.20.1 is installed separately under its MIT licenses (3Blue1Brown
+and Manim Community developers). Animation dependency versions and provenance are
+recorded in animations/. No Manim library or Microsoft font file is redistributed.

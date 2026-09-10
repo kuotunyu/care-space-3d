@@ -86,7 +86,7 @@ notebook={"cells":cells,"metadata":{"kernelspec":{"display_name":"Python 3","lan
 (root/"notebooks/CareSpace3D_CPU_Reproduction_v1_1.ipynb").write_text(json.dumps(notebook,indent=2),encoding="utf8")
 target=root/"artifacts/care-space-3d-source.zip"
 with ZipFile(target,"w",ZIP_DEFLATED) as z:
-    for folder in ["src","scripts","configs","viewer","docs","notebooks","tests"]:
+    for folder in ["src","scripts","configs","viewer","docs","notebooks","tests","animations"]:
         for p in (root/folder).rglob("*"):
             if p.is_file() and "__pycache__" not in p.parts:z.write(p,p.relative_to(root).as_posix())
     for filename in ["pyproject.toml","requirements-cpu.lock","package.json","package-lock.json","README.md","LICENSE","THIRD_PARTY_NOTICES.md"]:

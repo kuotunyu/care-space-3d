@@ -1,0 +1,57 @@
+{
+  "manim": "0.20.1",
+  "manim_source": "https://github.com/ManimCommunity/manim/tree/v0.20.1",
+  "python": "3.11.15",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "renderer": "cairo",
+  "device": "CPU",
+  "font": "Microsoft JhengHei (system font, not distributed)",
+  "ffmpeg": "ffmpeg version N-110112-gd6e30291db-20230328 Copyright (c) 2000-2023 the FFmpeg developers",
+  "scope": "Original 2D explanatory ray model; existing planner; not ReplicaCAD or production RGB-D fusion.",
+  "duration_seconds": 25.6,
+  "statuses": [
+    "unknown",
+    "unknown",
+    "passable"
+  ],
+  "unknown_cells": [
+    640,
+    232,
+    4
+  ],
+  "visual_checks": "Extracted first, occlusion, second-view and final frames inspected; Chinese label morphing replaced with fade transition.",
+  "files": {
+    "animations/evidence_story.py": {
+      "sha256": "898c88064408fc90c9c087adab4d455b0924f1f90192dd65248119ece1ccac8a",
+      "bytes": 2293
+    },
+    "animations/unknown_space.py": {
+      "sha256": "af23e9cd1f957a126d845e236271187a4326d273a0b145bb8cc45716ba07b2a3",
+      "bytes": 5674
+    },
+    "animations/render.py": {
+      "sha256": "91d1f9df8874f2777cfd49e683a57476766a25f21885f22960ab3fa3d177869f",
+      "bytes": 1125
+    },
+    "animations/requirements.lock": {
+      "sha256": "4096a06ef6a7715e59c259a1a87d194bcc1349f491a8f87d3a71d035530cba37",
+      "bytes": 576
+    },
+    "src/carespace/planning.py": {
+      "sha256": "dfc21598fa3d14f3303b29d45c1ea7c82f5311c393e2a8eb2dfe879cb7c3d57f",
+      "bytes": 2625
+    },
+    "src/carespace/contracts.py": {
+      "sha256": "7d7c43261f61491d80a5e0e696a3eb50e4670cae0ed17bf94bd86f177d83e334",
+      "bytes": 2069
+    },
+    "docs/media/unknown-space.mp4": {
+      "sha256": "3c18b75ab251e4fc8e6f6d57168090449a162f638b74403fd49d70766eee916b",
+      "bytes": 1083447
+    },
+    "docs/media/unknown-space.gif": {
+      "sha256": "a7d75150a5d1182f2574fa7b2e2b5a074829847e41f4a66d5ffaa5bc9cc850ac",
+      "bytes": 3502710
+    }
+  }
+}
