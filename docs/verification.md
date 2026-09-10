@@ -263,3 +263,26 @@ excluded datasets, models, artifacts and environments. Changed repository visibi
 to public. GitHub API confirmed private=false, visibility=public and MIT license.
 No Pages/site deployment or dataset/weight upload was performed. Earlier private
 status entries are historical, not the current repository visibility.
+
+
+## Mermaid 技術圖解 — 2026-09-11
+
+README 架構、design.md 三態流程、viewer-contract.md 互動時序各一張，
+以各 Markdown 的 Mermaid 區塊為唯一公開圖源。對照 Python pipeline／fusion／planning、
+run_learning 及 Viewer app／planning；沒有改動研究或瀏覽器程式。
+
+本機使用 @mermaid-js/mermaid-cli 11.12.0、Mermaid 11.17.2、Puppeteer 23.11.1，
+獨立安裝於忽略的 artifacts/mermaid-tooling，使用既有 Chrome 並停用 GPU。
+三張皆成功渲染 PNG，檢查文字、分支、箭頭與版面；渲染的 .mmd 與公開 Markdown 區塊逐字一致。
+研究環境、Node 執行時相依及 Manim 環境沒有變更。
+
+維護時直接修改 Markdown 裡的圖，不需維護第二份公開圖片或安裝 Viewer 相依。
+可使用 Mermaid CLI 的 Markdown 輸入功能做本機預覽，例如：
+
+```powershell
+# 已有相同 CLI 環境與 Chrome 設定時，輸出僅作本機預覽。
+artifacts/mermaid-tooling/node_modules/.bin/mmdc.cmd -i README.md -o artifacts/diagrams/readme-preview.md -p artifacts/diagrams/puppeteer.json
+```
+
+GitHub 原生渲染的版本由平台控制；本機成功不等於所有 GitHub 版本都相容。
+使用基本 flowchart／sequenceDiagram，並另行檢查實際 repository 顯示。

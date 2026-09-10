@@ -26,10 +26,26 @@
 
 ## 技術實作
 
-- **有尺度的幾何證據**：從像素射線融合 0.10 m 體素，保留 free／occupied／unknown；未觀測區域不當成自由空間。
-- **公平的模型對照**：RGB-D 與 DA3METRIC-LARGE 共用融合及規劃流程；明列相機資訊，完整幾何只作獨立參考評估。
-- **可追溯的工程流程**：場景變更使舊觀測與快取失效；模型 revision、SHA256、逐影格快取與失敗紀錄支援重現及恢復。
-- **可操作的 3D 工作台**：Three.js 呈現點雲、路徑與差異圖層，支援端點、半徑、觀測方法及 RGB／深度預覽切換。
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"fontSize": "20px"}, "flowchart": {"curve": "linear"}, "sequence": {"actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 18, "wrap": true}}}%%
+flowchart TB
+    S["合成場景・完整幾何"] --> O["有限觀測<br/>RGB-D・K・已知姿態"]
+    O -->|"RGB＋K"| D["DA3METRIC-LARGE"]
+    O -->|"RGB-D＋已知姿態"| F["三態幾何融合<br/>圓柱通行規劃"]
+    D -->|"預測深度"| F
+    F -->|"重建網格・路徑"| V["Three.js 工作台<br/>端點／半徑互動查詢"]
+    S -.->|"獨立參考分支"| R["oracle 網格與判定"]
+    R -.-> E["評估與負例分析"]
+    F -.->|"方法結果"| E
+    classDef primary fill:#e7f4f3,stroke:#117d83,color:#152f43
+    classDef reference fill:#f7f1df,stroke:#967422,color:#152f43
+    class F,V,D primary
+    class R,E reference
+```
+
+RGB-D 與 DA3 深度**分開實驗**，共用融合及規劃邏輯；K 與已知姿態來自合成觀測。
+完整幾何只用於合成與獨立 oracle 參考，沒有進入 DA3 推論或重建。
+場景版本、模型 revision、SHA256 與逐影格快取支援追溯及中斷恢復。
 
 `Python` · `PyTorch` · `DA3METRIC-LARGE` · `NumPy / SciPy` · `Three.js`
 

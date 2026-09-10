@@ -1,5 +1,41 @@
 # Viewer artifact contract v1
 
+## 互動查詢的執行邊界
+
+研究流程先產生靜態結果；瀏覽器載入後，調整端點或半徑只更新目前查詢。
+圖中的 Viewer 與規劃器是同一瀏覽器中的 JavaScript 模組，不是遠端服務。
+
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"fontSize": "20px"}, "flowchart": {"curve": "linear"}, "sequence": {"actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 18, "wrap": true}}}%%
+sequenceDiagram
+    actor U as 使用者
+    participant V as Viewer
+    participant A as 靜態產物
+    participant P as 瀏覽器規劃器
+    Note over V,A: Python 研究流程事先生成 study.json
+    U->>V: 開啟工作台
+    V->>A: 讀取 study.json
+    A-->>V: 網格、結果與影格索引
+    Note over V,A: 載入場景、點雲與保存比較表
+    U->>V: 調整端點或半徑
+    alt 輸入有效
+        V->>P: 所選網格＋端點／半徑
+        P-->>V: 格狀態與連通搜尋結果
+        V-->>U: 更新目前判定、路徑與淨空
+    else 座標空白或非有限值
+        V-->>U: 顯示待完成輸入，暫停判定
+    end
+    Note over V,P: 本地計算；不呼叫 DA3、不重新融合
+    Note over V,P: 保存比較表維持原始端點與半徑
+```
+
+對應 `viewer/app.js` 的載入與 `replan()`，以及 `viewer/planning.js` 的 `stateLookup()`／`bfs()`。
+淨空由 Viewer 根據路徑另行計算；未知只顯示候選虛線，淨空留空。
+切到 oracle 參考模式只改視覺對照，查詢仍用所選方法的重建網格。
+家具配置切換是載入已重新生成的案例；任意家具編輯與線上重新重建不在本版功能內。
+
+## 產物契約
+
 Fetch `/artifacts/study.json`. Top level: {schema_version:1, body:{radius:0.3,
 height:1.2, assumption:string}, cases:[Case], learning_status:string}.
 Case: {id, title, description, split, family, scene_id, bounds:[xmin,zmin,xmax,zmax],

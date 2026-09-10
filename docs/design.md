@@ -65,6 +65,34 @@ Otherwise -> unknown. Endpoints and swept volume obey the same inflation rules.
 Reference oracle is separately built from full geometry under identical body assumptions.
 Sub-voxel features and transparent/reflective materials are outside first renderer scope.
 
+## 三態通行判定
+
+下圖從已套用高度條件的 XZ 平面網格開始，對應 `src/carespace/planning.py`。
+輸入須先通過有限值、尺寸與網格契約驗證；輸入錯誤不當作幾何上的「未知」。
+
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": {"fontSize": "20px"}, "flowchart": {"curve": "linear"}, "sequence": {"actorFontSize": 20, "messageFontSize": 20, "noteFontSize": 18, "wrap": true}}}%%
+flowchart TD
+    A["三態網格・端點・半徑"] --> B["套用足跡與保守餘量<br/>膨脹障礙、未知與邊界"]
+    B --> C{"自由格是否連通？"}
+    C -->|"是"| P["可通行<br/>存在已觀測自由路徑"]
+    C -->|"否"| D{"加入未知格後<br/>是否連通？"}
+    D -->|"是"| U["未知<br/>連通仍依賴未知格"]
+    D -->|"否"| X["阻斷<br/>障礙或邊界已阻止連通"]
+    classDef pass fill:#e7f4f3,stroke:#117d83,color:#152f43
+    classDef unknown fill:#f7f1df,stroke:#967422,color:#152f43
+    classDef blocked fill:#fae9e4,stroke:#b74832,color:#152f43
+    class P pass
+    class U unknown
+    class X blocked
+```
+
+- 膨脹距離為 `radius + sqrt(2) × resolution`；障礙優先，場域外視為阻斷。
+- 兩次搜尋皆使用四鄰接，起終點也須符合當次允許的格狀態。
+- 第二次只是假設未知可加入搜尋，以區分「證據不足」與「已被阻斷」；不會把未知寫成自由。
+- Python 的未知結果不保存通行路徑；Viewer 可另外畫出候選虛線，不能標成可通行。
+- 比較 oracle 時使用相同尺寸假設，但 oracle 由完整幾何獨立生成，不回灌重建網格。
+
 ## Experiments and acceptance
 
 First show normal, barrier and insufficient-observation fixtures. Then compare baseline
