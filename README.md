@@ -1,129 +1,102 @@
 # CareSpace 3D
 
-面向居家照護情境的 **3D 空間重建與幾何通行研究工作台**。可操作本機展示、
-RGB-D 基線、實際 DA3METRIC-LARGE 推論、三態通行分析與失敗案例均已實作。
-第一版使用程式化房間與原尺度 ReplicaCAD 家具；不是原始公寓布局或真實長照資料。
+**看得見房間，不代表已有足夠證據確認通路。**
 
-開啟本機展示：**http://127.0.0.1:8840/viewer/**（先啟動下方 server）。
+面向居家照護情境的 3D 空間重建與幾何通行研究工作台。從有限的合成觀測建立
+有尺度的空間證據，對照 RGB-D 與學習式深度，互動分析 **可通行 · 阻斷 · 未知**。
 
-首次展示請看 [三分鐘操作流程與第一版交付](docs/demo-guide.md)：包含預期結果、
-技術追問回答與已知邊界。第一版本機核心已完成；DA3 負例保留，Colab CPU 重現與三案例展示已由使用者輸出及截圖確認；GPU 尚未實測。
+**Python · PyTorch · DA3METRIC-LARGE · Three.js**
 
-作品介紹與技術摘要見 [作品展示摘要](docs/portfolio-summary.md)；
-[公開準備清單](docs/publication-preparation.md) 記錄待確認事項，目前仍為本機交付。
+本機 CPU 端到端實作完成；Colab CPU 重現與三案例展示已有輸出及截圖驗收。
 
-## 現有工作目錄直接執行
+[三分鐘展示](docs/demo-guide.md) · [實驗結果](docs/results.md) · [安裝與重現](docs/reproduction.md) · [Colab 啟動指南](docs/colab-start-here.md)
 
-PowerShell，工作目錄 `D:\AI-Portfolio\CC_github部隊\care-space-3d`：
+## 同樣 8 張觀測，為什麼判定不同？
+
+在同一個開放通道、相同端點及半徑下：
+
+| 重建方法 | 融合影格 | 已觀測比例 | 通行判定 |
+|---|---:|---:|---|
+| RGB-D · 全部觀測 | 24 | 93.3% | **可通行** |
+| RGB-D · 固定間隔 | 8 | 81.0% | **未知** |
+| RGB-D · 覆蓋選樣 | 8 | 92.8% | **可通行** |
+| DA3 Metric · 全部觀測 | 24 | 92.5% | **阻斷** |
+
+觀測位置影響能否建立連續的自由空間證據；學習式深度即使有尺度，也可能把開放通道重建成阻斷。
+工作台把這些差異留在同一個幾何分析流程中，讓結果可對照、可追溯。
+
+這是受控小樣本實驗。覆蓋選樣事先讀取候選 RGB-D，只節省融合用量；
+不宣稱節省拍攝成本。DA3 的阻斷是保留的負例，不是實際通道真值。
+[完整結果與分母定義 →](docs/results.md)
+
+## 可以操作什麼
+
+- **切換三個情境**：通道開放、沙發移至通道、觀測不足，對照可通行／阻斷／未知。
+- **改變查詢**：設定 S/G 端點與圓柱半徑，重新計算路徑；保存的研究比較表維持原始條件。
+- **檢查重建證據**：俯視、點雲、未知區與狹窄帶；完整參考幾何另行標示。
+- **追查模型分歧**：配對相同觀測的 RGB-D／DA3，從差異格回看 RGB、深度與障礙支援。
+
+目前提供本機及 Colab 內嵌工作台，沒有公開線上 demo。
+[操作流程與預期畫面狀態 →](docs/demo-guide.md)
+
+## 從觀測到判定：每一層都有明確責任
+
+| 階段 | 實作 | 關鍵工程選擇 |
+|---|---|---|
+| 場景與觀測 | 程式化房間、原尺度家具、RGB-D、相機內外參 | 家具配置變更會更新場景與觀測身分 |
+| 深度來源 | 合成 RGB-D 基線／實際 DA3METRIC-LARGE 推論 | DA3只讀RGB＋K；融合另使用已知相機姿態 |
+| 幾何融合 | 像素射線累積到0.10m體素 | 未觀測保持unknown，occupied優先 |
+| 通行分析 | 高度欄證據、圓柱足跡膨脹、四鄰接搜尋 | 區分已知自由通路、證實阻斷及待觀測候選路線 |
+| 評估與展示 | 獨立oracle、三態矩陣、互動Three.js viewer | 參考幾何不進入重建推論；外觀不代替碰撞證據 |
+
+[設計與資料契約](docs/design.md) · [核心程式](src/carespace) · [前端](viewer) · [測試](tests)
+
+## 深度：不只接上一個模型
+
+**尺度與資訊邊界。** 固定模型與程式revision、核對官方focal/300尺度轉換，
+不以真值深度擬合尺度冒充部署能力。[尺度核對](docs/da3-audit.md)
+
+**幾何更新與可恢復執行。** 場景、觀測、模型及重建revision不一致時拒用舊結果；
+逐影格快取支援恢復，保存失敗與時間記錄。[重現流程](docs/reproduction.md)
+
+**能解釋負結果。** DA3在正常通道誤判阻斷；追查單影格障礙支援，再用固定規則
+將低支援障礙降為未知，仍未恢復正常通路。負結果與決策覆蓋代價都保留。
+[深度診斷](docs/depth-audit.md) · [探索性負結果](docs/abstention.md)
+
+**不靠全部拒絕取得漂亮數字。** 同時報錯放／oracle阻斷與錯放／預測放行，
+並列未知比例及決策覆蓋。沒有放行時，後者為N/A。
+[評估結果](docs/results.md)
+
+## 重現與驗證
+
+| 證據 | 已完成範圍 |
+|---|---|
+| 本機測試 | Python 29項；前端14項，涵蓋未知處理、幾何邊界、失敗記錄與互動狀態等 |
+| Colab CPU | Python 3.11.15，29項測試通過；研究結果與三案例展示由使用者輸出／截圖確認 |
+| 資料與模型 | 約8.67MB家具子集、單一1.34GB checkpoint；固定來源revision與SHA256 |
+| 可追溯交付 | 來源ZIP與原始碼逐檔比對；數據、權重與環境不放入原始碼包 |
+
+Colab證據不是獨立下載核對全部雲端檔案；GPU效能、真實觸控、讀屏及200%縮放仍未完整驗證。
+[驗收紀錄與範圍 →](docs/verification.md)
+
+已有環境與研究資料時，在專案根目錄執行：
 
 ```powershell
-.venv/Scripts/python -m pytest -q
-node --test tests/browser-*.test.mjs
 ./scripts/serve.ps1
 ```
 
-`serve.ps1` 只綁定 127.0.0.1，若 port 被占用就停止，不會殺其他程序。可改
-`./scripts/serve.ps1 -Port 8841`。本次執行的 PID/port 記錄在 `artifacts/server.json`。
-要關閉自己啟動的 server：確認該檔 PID 與命令後 `Stop-Process -Id <該PID>`。
+開啟 [本機工作台](http://127.0.0.1:8840/viewer/)。全新環境請依
+[完整安裝與資料生成步驟](docs/reproduction.md)，或使用
+[CareSpace3D CPU Colab notebook](notebooks/CareSpace3D_CPU_Reproduction_v1_1.ipynb)。
+來源程式庫不內含資料與權重；不是clone後就已有研究成果的靜態網站。
 
-操作：選擇正常／沙發移至通道／觀測不足案例，切換 RGB-D 或 DA3、全部或取樣觀測。
-預設瀏覽模式可直接捲動頁面，點圖不改端點；按「操作 3D」才拖曳旋轉／捲輪縮放。
-按「設定起點 S／設定終點 G」再點地面，或直接輸入座標；選點後回到瀏覽，Esc 可退出。
-調整圓柱半徑可重新分析。端點圓環標示圓柱半徑。
-設定 S/G 時，畫布未完整可見會自動帶入畫面並聚焦，方向鍵可直接微調。
-介面文字至少 16 px；圖層說明可展開，包含方法差異停用原因或目前配對。
-切換方法會保留目前端點；「還原實驗端點與半徑」回到預設查詢。比較表保留原始實驗結果。
-查詢摘要顯示案例、方法、來源與半徑；「實驗預設／自訂查詢／待完成輸入」反映實際條件，
-還原後顯示成功訊息。窄版影格可切換 RGB／深度，寬版仍並排。
-「回到全景／俯視分析」切換視角；實線是自由通路，虛線是尚待觀測的候選路線。
-參考幾何需明確切換，僅疊加顯示。藍灰點雲來自觀測深度，橘色低柱只是障礙投影。
-紫色狹窄帶以距已知障礙的半徑淨空 0.30–0.60 m 顯示，沒有醫療或法規意義。
-觀測影格的「預覽張數」只改縮圖和相機標記；選擇重建方法才切換其觀測子集。
-展示在操作與資料變更時重繪，閒置時不持續渲染。
+## 研究邊界與來源
 
-「檢視 DA3 分歧」會切換至俯視差異圖：標出自由／障礙不一致、已觀測變未知、
-未知變已觀測的位置。DA3 必須配對相同影格的 RGB-D；基線不是完整真值。
-診斷會指出端點膨脹狀態、基线路徑受限中心；不把單條路徑受阻當作沒有替代路徑。
-重新產生診斷報告：`node scripts/build_diagnostics.mjs`。
-結果在 [方法差異診斷](docs/diagnostics.md) 與 `artifacts/diagnostics.json`，含完整矩陣、
-資料與程式 SHA256；介面直接用同一套程式計算當前查詢，不載入過期診斷快取。
+第一版使用半徑0.30m、高1.20m直立圓柱、平坦已知支撐面及已知合成相機姿態。
+不是完整輪椅通行證據、醫療器材、無障礙認證或長者安全保證。
 
-## 從空環境重現
+三個evaluation配置共享房間與家具，不是三個獨立家庭；未宣稱未知場景泛化。
+ReplicaCAD固定版本LICENSE與官網標示存在差異，目前依較嚴格的本機非商業條件處理，
+不在此提供家具資料、權重或派生場景下載。公開素材與原創程式授權仍待確認。
 
-需 Git、curl、Python 3.11（或 uv 管理的 3.11）、Node/npm。所有相依只裝在本專案 venv。
-
-```powershell
-uv venv --python 3.11 .venv
-uv pip install --python .venv/Scripts/python.exe --index-strategy unsafe-best-match -r requirements-cpu.lock
-uv pip install --python .venv/Scripts/python.exe --no-deps -e .
-npm ci
-.venv/Scripts/python scripts/fetch_assets.py
-.venv/Scripts/python scripts/fetch_model.py
-.venv/Scripts/python scripts/run_study.py
-.venv/Scripts/python scripts/run_learning.py
-.venv/Scripts/python scripts/build_report.py
-.venv/Scripts/python scripts/build_depth_audit.py
-node scripts/build_diagnostics.mjs
-.venv/Scripts/python -m pytest -q
-node --test tests/browser-*.test.mjs
-./scripts/serve.ps1
-```
-
-Linux 將 `.venv/Scripts/python` 換成 `.venv/bin/python`，啟動 viewer 用
-`.venv/bin/python -m http.server 8840 --bind 127.0.0.1`。未修改 Ubuntu-bench。
-安裝學習式依賴前也可先只安裝 `-e . pytest==8.3.5 embreex==2.17.7.post6` 跑 CPU 基線。
-
-資料逐檔下載共 **8.67 MB**；只下載一個 **1.34 GB** 模型權重。模型/程式固定 revision
-且驗 SHA256；完整安裝版本在 requirements-cpu.lock。沒有 latest 模型別名、付費 API、
-GitHub repo 建立、push 或公開部署。
-
-`run_study.py` 重新生成基線並歸檔舊 study；`run_learning.py` 逐影格快取可恢復。
-場景幾何、RGB/K/姿態、配置與重建版本不一致會拒用舊結果。
-原始觀測 NPZ 在 `artifacts/observations/`，學習式 NPZ 在 `artifacts/predictions/`，
-主介面資料為 `artifacts/study.json`，完整配置在 `configs/study.json`。
-
-## 結果與研究邊界
-
-見 [自動生成結果報告](docs/results.md)、[精簡設計](docs/design.md)、
-[原始碼與資料授權](docs/sources.md)、[DA3 尺度核對](docs/da3-audit.md)、
-[失敗紀錄](docs/failure-log.md)。
-
-[深度來源追溯](docs/depth-audit.md) 核對官方尺度／座標工具，並從快取深度追溯障礙格的
-影格與像素來源。執行上述 `build_depth_audit.py` 後，可從工作台開啟含 RGB、參考／預測
-深度和誤差圖的報告。這是使用合成真值的事後診斷，沒有把真值遮罩送入重建或規劃。
-報告也按支援影格數對照全部 DA3 障礙格與 oracle；單影格支援仍包含參考障礙，
-不能直接刪除。格子重疊比例不等於路徑錯誤放行率。
-
-[障礙降為未知實驗](docs/abstention.md) 使用固定單影格規則，保留自由格集合，
-檢查降低阻斷確定性的代價。執行 `.venv/Scripts/python scripts/run_abstention.py`，
-本機開啟 `/artifacts/abstention/index.html`。這是重用既有評估案例的探索性實驗，
-不會修改主要工作台的研究結果；未知增加不等於重建成功。
-
-- 全部 RGB-D 的三案例得到可通行／阻斷／未知。DA3 保留開放通道誤判阻斷的負例。
-- 每個方法僅 3 個固定 evaluation 查詢，變體共享房間/家具，沒有獨立家庭泛化證據。
-- 0.10 m 體素、已觀測射線累積、free/occupied/unknown；unknown 不自動視為 free。
-  深度、遮擋與離散化誤差仍然存在。忽略 y<0.10 m 的地面接觸層。
-- 模型是半徑 0.30 m、高 1.20 m 直立圓柱，圓形截面不區分轉向；非完整輪椅模型。
-  淨空指路徑中心的半徑空間，不是門寬，也不是安全餘裕承諾。
-- 學習式方案只拿 RGB＋K 推論；融合使用已知合成相機姿態。未知姿態模式明確未支援；
-  沒有假裝定位成功或用 GT 對齊冒充部署能力。所有深度 GT 只在推論後評估。
-- 覆蓋選樣讀取所有候選 RGB-D，節省的是融合用量；不宣稱節省拍攝成本。
-- false-release 同時報告 oracle 阻斷與預測放行分母；未知比例與決策覆蓋率一起呈現。
-- RTX 4090 原本正在忙，本次全部 CPU float32 2 threads；峰值 VRAM 為 null（不適用）。
-
-ReplicaCAD 網站寫 CC BY 4.0，但固定版本 LICENSE.txt 寫 **CC BY-NC 4.0**，尚待官方
-釐清；目前採較嚴格的本機非商業研究條件。原始資料、模型權重與派生資料沒有被提交。
-
-## Colab
-
-第一次操作請依 [Colab 明確路徑與停止點](docs/colab-start-here.md)。
-
-[CareSpace3D_CPU_Reproduction_v1_1.ipynb](notebooks/CareSpace3D_CPU_Reproduction_v1_1.ipynb) 僅安裝/啟動相同核心，不重寫模型與幾何。
-執行 `scripts/make_colab_bundle.py` 取得 `artifacts/care-space-3d-source.zip`，放入
-自己的 Drive `CareSpace3D/` 後執行 notebook。下載/模型/結果持久保存，可中斷恢復。
-Colab CPU 已完成安裝、29 項測試、研究流程及三案例展示；證據見 [驗收紀錄](docs/verification.md)。
-這是使用者提供的輸出與截圖驗收，並非 GPU 測試。GPU adapter 尚未驗證。
-
-來源 ZIP 包含 Python／前端測試；Colab 安裝後先跑 CPU 測試，取得 Node 相依後再跑
-前端測試。工作台的「保存的研究報告」可開啟深度診斷與降為未知實驗，兩份報告均
-使用保存的原始查詢，並在開啟時核對 study 指紋。
+[來源與授權記錄](docs/sources.md) · [失敗紀錄](docs/failure-log.md) · [公開準備範圍](docs/publication-preparation.md)
