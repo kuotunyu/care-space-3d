@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-labelledby="title desc">
+<title id="title">CareSpace 3D — three passage evidence states</title><desc id="desc">Original conceptual floor plans: a known free route, a barrier, and an unobserved region. Not experimental output.</desc>
+<rect width="1200" height="520" fill="#eef3f6"/>
+<g font-family="Arial, sans-serif" fill="#183746"><text x="36" y="49" font-size="30" font-weight="700">CareSpace 3D</text><text x="36" y="82" font-size="18">Passage decisions need geometry AND observation evidence.</text>
+<g transform="translate(36,110)"><rect width="352" height="324" rx="6" fill="white"/><text x="20" y="35" font-size="22" font-weight="700" fill="#087f83">01  PASSABLE</text><rect x="24" y="62" width="304" height="186" fill="#d4eded" stroke="#516975" stroke-width="5"/>
+<rect x="100" y="65" width="38" height="60" fill="#d16b52"/><rect x="204" y="196" width="64" height="49" fill="#d16b52"/>
+<path d="M58 155 H292" stroke="#087f83" stroke-width="4" fill="none" />
+<circle cx="58" cy="155" r="9" fill="#087f83"/><circle cx="292" cy="155" r="9" fill="#ba503b"/><text x="48" y="185" font-size="18">S</text><text x="282" y="185" font-size="18">G</text><text x="20" y="285" font-size="18">Known free space connects S to G.</text></g>
+<g transform="translate(424,110)"><rect width="352" height="324" rx="6" fill="white"/><text x="20" y="35" font-size="22" font-weight="700" fill="#ba503b">02  BLOCKED</text><rect x="24" y="62" width="304" height="186" fill="#d4eded" stroke="#516975" stroke-width="5"/>
+<rect x="100" y="65" width="38" height="60" fill="#d16b52"/><rect x="204" y="196" width="64" height="49" fill="#d16b52"/>
+<rect x="170" y="65" width="30" height="180" fill="#d16b52"/><path d="M58 155 H155" stroke="#ba503b" stroke-width="4"/><path d="M150 145 L163 165 M163 145 L150 165" stroke="#ba503b" stroke-width="4"/>
+<circle cx="58" cy="155" r="9" fill="#087f83"/><circle cx="292" cy="155" r="9" fill="#ba503b"/><text x="48" y="185" font-size="18">S</text><text x="282" y="185" font-size="18">G</text><text x="20" y="285" font-size="18">A barrier disconnects the route.</text></g>
+<g transform="translate(812,110)"><rect width="352" height="324" rx="6" fill="white"/><text x="20" y="35" font-size="22" font-weight="700" fill="#89651c">03  UNKNOWN</text><rect x="24" y="62" width="304" height="186" fill="#d4eded" stroke="#516975" stroke-width="5"/>
+<rect x="164" y="65" width="161" height="180" fill="#f0dfad"/>
+<rect x="100" y="65" width="38" height="60" fill="#d16b52"/><rect x="204" y="196" width="64" height="49" fill="#d16b52"/>
+<path d="M58 155 H292" stroke="#89651c" stroke-width="4" fill="none" stroke-dasharray="9 7"/>
+<circle cx="58" cy="155" r="9" fill="#087f83"/><circle cx="292" cy="155" r="9" fill="#ba503b"/><text x="48" y="185" font-size="18">S</text><text x="282" y="185" font-size="18">G</text><text x="20" y="285" font-size="18">Missing evidence stays unknown.</text></g>
+<text x="36" y="473" font-size="17">Original geometric schematic · not a reconstruction screenshot or an experimental result</text><text x="36" y="500" font-size="17">RGB-D baseline / learned depth / explicit unknown space / reproducible evaluation</text></g></svg>

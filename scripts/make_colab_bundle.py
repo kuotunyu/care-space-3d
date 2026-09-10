@@ -89,7 +89,7 @@ with ZipFile(target,"w",ZIP_DEFLATED) as z:
     for folder in ["src","scripts","configs","viewer","docs","notebooks","tests"]:
         for p in (root/folder).rglob("*"):
             if p.is_file() and "__pycache__" not in p.parts:z.write(p,p.relative_to(root).as_posix())
-    for filename in ["pyproject.toml","requirements-cpu.lock","package.json","package-lock.json","README.md"]:
+    for filename in ["pyproject.toml","requirements-cpu.lock","package.json","package-lock.json","README.md","LICENSE","THIRD_PARTY_NOTICES.md"]:
         p=root/filename
         if p.exists():z.write(p,filename)
 print(f"Wrote {target} ({target.stat().st_size} bytes)")

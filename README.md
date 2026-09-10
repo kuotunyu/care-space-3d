@@ -13,6 +13,10 @@ Repository 已建立並維持私人；目前沒有公開部署。
 
 [三分鐘展示](docs/demo-guide.md) · [實驗結果](docs/results.md) · [安裝與重現](docs/reproduction.md) · [Colab 啟動指南](docs/colab-start-here.md)
 
+![自由通路、障礙阻斷與觀測不足的原創幾何示意](docs/media/passage-states.svg)
+
+*原創概念示意，不是實驗截圖；實際數值見下方比較。*
+
 ## 同樣 8 張觀測，為什麼判定不同？
 
 在同一個開放通道、相同端點及半徑下：
@@ -99,6 +103,6 @@ Colab證據不是獨立下載核對全部雲端檔案；GPU效能、真實觸控
 
 三個evaluation配置共享房間與家具，不是三個獨立家庭；未宣稱未知場景泛化。
 ReplicaCAD固定版本LICENSE與官網標示存在差異，目前依較嚴格的本機非商業條件處理，
-不在此提供家具資料、權重或派生場景下載。公開素材與原創程式授權仍待確認。
+不在此提供家具資料、權重或派生場景下載。原創程式、文件與此概念示意採 [MIT](LICENSE)；第三方材料另依 [授權範圍說明](THIRD_PARTY_NOTICES.md)。
 
 [來源與授權記錄](docs/sources.md) · [失敗紀錄](docs/failure-log.md) · [公開準備範圍](docs/publication-preparation.md)
