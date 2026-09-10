@@ -18,7 +18,8 @@ Colab 讀取路徑：/content/drive/MyDrive/CareSpace3D/care-space-3d-source.zip
 重現輸出目錄：/content/drive/MyDrive/CareSpace3D/work-v01/
 
 This notebook installs and invokes the same project core. It contains no separate
-geometry/model implementation. It has not been executed in this development session.
+geometry/model implementation. User-provided Colab logs and screenshots verified
+CPU installation, the study run and the three baseline viewer cases; see docs/verification.md.
 The verified adapter uses CPU float32; no particular Colab GPU is assumed.
 
 Place the provided `care-space-3d-source.zip` in `MyDrive/CareSpace3D/`. This is source

@@ -64,7 +64,7 @@
 | 同核心重現 | 根目錄 README；`notebooks/CareSpace3D_CPU_Reproduction_v1_1.ipynb`；`artifacts/care-space-3d-source.zip` |
 
 第一版本機核心已交付。來源 ZIP 含測試，解壓後已用本機既有 Python 相依與
-獨立 Node 安裝驗證；Colab notebook 尚未實跑，GPU adapter 未驗證。
+獨立 Node 安裝驗證；Colab CPU 安裝、研究流程與三案例展示已有使用者輸出及截圖驗收；GPU adapter 未驗證。
 本版家具是程式化配置；沒有任意家具編輯器、姿態估計或即時現場重建服務。
 ReplicaCAD 固定下載版本的 LICENSE 與官方網頁標示不一致，目前採較嚴格的
 CC BY-NC 4.0 本機非商業研究條件。沒有建立 GitHub remote、push 或公開部署。

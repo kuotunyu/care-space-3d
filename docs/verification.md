@@ -205,9 +205,39 @@ cases reproduce passable/blocked/unknown; DA3 reproduces blocked/blocked/unknown
 Reported MAE rounds to .299/.279 m normal, .405/.373 m moved, .460 m sparse.
 These are pasted execution results, not independent inspection of cloud files.
 The 217.51 s value is learning launcher wall time, not whole notebook duration.
-Colab viewer/browser remains unverified.
+At this log-only checkpoint, Colab viewer/browser was still unverified; subsequent
+user screenshots confirm loading and three baseline case displays (see below).
 
 The report generator incorrectly embedded historical local GPU occupancy, a claim
 that Colab was not executed, and browser verification. Removed those fixed claims;
 report now defers to saved execution metadata and separate platform/UI evidence.
 This correction changes report text only, not experiment data or inference.
+
+## Colab viewer acceptance and first-version closeout
+
+User screenshots show CareSpace3D_CPU_Reproduction_v1_1.ipynb with the embedded
+viewer loaded. Three RGB-D all / reconstruction / radius 0.30 m cases match:
+
+| Case | Displayed status | Observed fraction |
+|---|---|---|
+| ReplicaCAD furniture, open passage | Passable | 93.3% (earlier screenshot) |
+| Sofa moved into passage | Blocked; experiment default | 88.9% |
+| Insufficient observations | Unknown; experiment default | 40.2% |
+
+Point cloud, floor states, endpoints, path, frame previews and comparison table are
+visible across the screenshots. This verifies displayed states after user-operated
+case switching, not every interaction or browser/device combination. Cloud Node
+console output was not supplied separately; do not report independently observed
+cloud Node test counts. The prior local 14-test result remains local evidence.
+
+Selected screenshots are preserved locally in artifacts/colab-evidence/ with SHA256
+manifest.json; originals were supplied in this conversation. They are excluded from
+the source ZIP and Git. Cloud artifacts have not been downloaded or substituted for
+the local study. The user's cloud report retains old host prose until regenerated
+with the corrected generator; numerical results are not changed by that correction.
+
+Current completion: local CPU MVP and user-verified Colab CPU reproduction/display.
+Remaining unverified: GPU, real touch, screen reader, 200% zoom and exhaustive cloud
+UI/error recovery. Unknown poses and richer body models are future scope. No GitHub
+creation, push or public deployment. Earlier unverified notes above describe their
+historical checkpoints, superseded only within the evidence scope recorded here.

@@ -7,7 +7,7 @@ RGB-D 基線、實際 DA3METRIC-LARGE 推論、三態通行分析與失敗案例
 開啟本機展示：**http://127.0.0.1:8840/viewer/**（先啟動下方 server）。
 
 首次展示請看 [三分鐘操作流程與第一版交付](docs/demo-guide.md)：包含預期結果、
-技術追問回答與已知邊界。第一版本機核心已完成；DA3 負例保留，Colab／GPU 尚未實測。
+技術追問回答與已知邊界。第一版本機核心已完成；DA3 負例保留，Colab CPU 重現與三案例展示已由使用者輸出及截圖確認；GPU 尚未實測。
 
 ## 現有工作目錄直接執行
 
@@ -118,7 +118,8 @@ ReplicaCAD 網站寫 CC BY 4.0，但固定版本 LICENSE.txt 寫 **CC BY-NC 4.0*
 [CareSpace3D_CPU_Reproduction_v1_1.ipynb](notebooks/CareSpace3D_CPU_Reproduction_v1_1.ipynb) 僅安裝/啟動相同核心，不重寫模型與幾何。
 執行 `scripts/make_colab_bundle.py` 取得 `artifacts/care-space-3d-source.zip`，放入
 自己的 Drive `CareSpace3D/` 後執行 notebook。下載/模型/結果持久保存，可中斷恢復。
-本次沒有執行 Colab；CPU 路徑不假設會分到特定 GPU。GPU adapter 尚未驗證。
+Colab CPU 已完成安裝、29 項測試、研究流程及三案例展示；證據見 [驗收紀錄](docs/verification.md)。
+這是使用者提供的輸出與截圖驗收，並非 GPU 測試。GPU adapter 尚未驗證。
 
 來源 ZIP 包含 Python／前端測試；Colab 安裝後先跑 CPU 測試，取得 Node 相依後再跑
 前端測試。工作台的「保存的研究報告」可開啟深度診斷與降為未知實驗，兩份報告均

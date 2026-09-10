@@ -38,6 +38,6 @@ no modification of Ubuntu-bench; no oracle in inference; unknown must be retaine
   licenses, report denominators and failure evidence. Capture browser views and save provenance.
   Deliver local path and commands; no remote actions.
 
-Completed local CPU MVP. Unknown-pose reconstruction and Colab execution were not
-performed and are explicitly marked unsupported/unverified; the launcher shares the
-same verified CPU core. Independent review and browser parity fixes are documented.
+Completed local CPU MVP. Unknown-pose reconstruction remains unsupported. Colab CPU execution and three
+baseline viewer cases were subsequently verified from user-provided logs/screenshots;
+GPU execution remains unverified. The launcher shares the same CPU core. Independent review and browser parity fixes are documented.
