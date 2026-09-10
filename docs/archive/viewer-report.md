@@ -1,5 +1,7 @@
 # Viewer implementation report
 
+> 歷史紀錄，非目前待辦；現況見 [專案狀態](../publication-preparation.md)。
+
 Run `npm ci` once, then `./scripts/serve.ps1` from the project root. Open
 `http://127.0.0.1:8840/viewer/`. The static viewer reads `/artifacts/study.json`
 and local Three.js 0.174.0; it uses no CDN or external services.

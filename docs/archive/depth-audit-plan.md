@@ -1,5 +1,7 @@
 # Depth-to-occupancy forensic audit
 
+> 歷史紀錄，非目前待辦；現況見 [專案狀態](../publication-preparation.md)。
+
 Continue the user-authorized investigation of the retained DA3 false-blocking case.
 Use cached predictions only; no GPU, new checkpoint, retraining, GT scale fit or
 evaluation-threshold changes. First verify pinned upstream focal/300 and camera-Z

@@ -1,5 +1,7 @@
 # Occupied support risk audit
 
+> 歷史紀錄，非目前待辦；現況見 [專案狀態](../publication-preparation.md)。
+
 Goal: assess whether low frame support identifies only spurious obstacles, using
 the already authorized cached-depth forensic workflow. No inference, filtering,
 new thresholds, route changes or held-out performance claims.

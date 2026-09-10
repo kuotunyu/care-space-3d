@@ -1,5 +1,7 @@
 # Scientific correctness review — 2026-09-10
 
+> 歷史紀錄，非目前待辦；現況見 [專案狀態](../publication-preparation.md)。
+
 Read-only source review of the first local MVP; only this report was added. Scope: contracts, synthesis, fusion, oracle/planning, learned adapter, study runner, configuration, tests and current study artifact. Viewer excluded. No GPU inference, environment changes, optional models or medical-standard expansion.
 
 Validation: `.venv/Scripts/python.exe -m pytest -q` passed **9 tests in 11.20 s**. The findings below include failure cases not exercised by those tests. Priorities are relative to the stated conservative geometry and reproducible-study contract; they do not imply that every issue occurred in the saved six cases.

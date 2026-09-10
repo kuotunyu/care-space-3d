@@ -1,5 +1,7 @@
 # Method disagreement diagnostics
 
+> 歷史紀錄，非目前待辦；現況見 [專案狀態](../publication-preparation.md)。
+
 User authorization: continue improving the delivered workbench; routine engineering
 choices are delegated. This is a bounded addition to the existing comparison workflow.
 

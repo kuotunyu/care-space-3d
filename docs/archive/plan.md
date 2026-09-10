@@ -1,5 +1,7 @@
 # CareSpace 3D implementation plan
 
+> 歷史紀錄，非目前待辦；現況見 [專案狀態](../publication-preparation.md)。
+
 Goal: execute a small, honest reconstruction and passage study with a local 3D viewer.
 Architecture: immutable scene -> observed RGB-D -> voxel states -> 2D swept-cylinder
 planner. Full geometry evaluation is a separate branch. Learned depth replaces only

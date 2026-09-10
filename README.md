@@ -105,4 +105,4 @@ Colab證據不是獨立下載核對全部雲端檔案；GPU效能、真實觸控
 ReplicaCAD固定版本LICENSE與官網標示存在差異，目前依較嚴格的本機非商業條件處理，
 不在此提供家具資料、權重或派生場景下載。原創程式、文件與此概念示意採 [MIT](LICENSE)；第三方材料另依 [授權範圍說明](THIRD_PARTY_NOTICES.md)。
 
-[來源與授權記錄](docs/sources.md) · [失敗紀錄](docs/failure-log.md) · [公開準備範圍](docs/publication-preparation.md)
+[來源與授權記錄](docs/sources.md) · [失敗紀錄](docs/failure-log.md) · [專案狀態](docs/publication-preparation.md) · [文件索引](docs/README.md)
