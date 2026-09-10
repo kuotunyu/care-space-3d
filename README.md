@@ -9,6 +9,9 @@ RGB-D 基線、實際 DA3METRIC-LARGE 推論、三態通行分析與失敗案例
 首次展示請看 [三分鐘操作流程與第一版交付](docs/demo-guide.md)：包含預期結果、
 技術追問回答與已知邊界。第一版本機核心已完成；DA3 負例保留，Colab CPU 重現與三案例展示已由使用者輸出及截圖確認；GPU 尚未實測。
 
+作品介紹與技術摘要見 [作品展示摘要](docs/portfolio-summary.md)；
+[公開準備清單](docs/publication-preparation.md) 記錄待確認事項，目前仍為本機交付。
+
 ## 現有工作目錄直接執行
 
 PowerShell，工作目錄 `D:\AI-Portfolio\CC_github部隊\care-space-3d`：
