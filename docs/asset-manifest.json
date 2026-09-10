@@ -1,0 +1,95 @@
+{
+  "repo": "ai-habitat/ReplicaCAD_dataset",
+  "revision": "3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d",
+  "license_actual": "CC BY-NC 4.0",
+  "license_card": "CC BY 4.0",
+  "license_conflict": true,
+  "use": "local noncommercial research",
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "bytes": 1421,
+      "sha256": "25940e79f7b3bce9419a98bd862c75d35d589c2c560165876340b5245ff7f036",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/LICENSE.txt"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3837,
+      "sha256": "39e3f4aec02c60cc6d99666f2f9b02dacbcf4b331d4b47a2926986604b39cb47",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/README.md"
+    },
+    {
+      "path": "configs/scenes/empty_stage.scene_instance.json",
+      "bytes": 218,
+      "sha256": "cb12b3f9a40ee161c2990c9c800b9616a6b8434ba4e42f78d4044783d4e819a1",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/configs/scenes/empty_stage.scene_instance.json"
+    },
+    {
+      "path": "configs/stages/frl_apartment_stage.stage_config.json",
+      "bytes": 202,
+      "sha256": "69cb42176954236d831026cc18a5b13fad03d48fcbb83e83aca0cb01eaf52ff8",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/configs/stages/frl_apartment_stage.stage_config.json"
+    },
+    {
+      "path": "stages/frl_apartment_stage.glb",
+      "bytes": 6419360,
+      "sha256": "9a28a0511ab15cb48bbd1a6a171798918f24b66e54a8406d69d270938d71d923",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/stages/frl_apartment_stage.glb"
+    },
+    {
+      "path": "configs/objects/frl_apartment_sofa.object_config.json",
+      "bytes": 579,
+      "sha256": "12180266bdd5d4a84dc777f32a5ac23060688dac219e16bad3b17d88273878f2",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/configs/objects/frl_apartment_sofa.object_config.json"
+    },
+    {
+      "path": "objects/frl_apartment_sofa.glb",
+      "bytes": 805764,
+      "sha256": "2a43245f8142a21a43ad190b8af45bdb6f25857d1db965637398e278645e72cc",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/objects/frl_apartment_sofa.glb"
+    },
+    {
+      "path": "objects/convex/frl_apartment_sofa_cv_decomp.glb",
+      "bytes": 20988,
+      "sha256": "9ea83d7955b5298deaf87266c6f59165e14ca11b6f3cb833b83be45e0fce781d",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/objects/convex/frl_apartment_sofa_cv_decomp.glb"
+    },
+    {
+      "path": "configs/objects/frl_apartment_chair_01.object_config.json",
+      "bytes": 682,
+      "sha256": "5fda19d6b9e974ad6d8d212719d75ff687c2b1144da6b06f93c39a8c298fc536",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/configs/objects/frl_apartment_chair_01.object_config.json"
+    },
+    {
+      "path": "objects/frl_apartment_chair_01.glb",
+      "bytes": 703032,
+      "sha256": "594f7b45a2197a22e8a7ad986b029fddea9244c627124aeab1293ecbc7353475",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/objects/frl_apartment_chair_01.glb"
+    },
+    {
+      "path": "objects/convex/frl_apartment_chair_01_cv_decomp.glb",
+      "bytes": 26744,
+      "sha256": "1214fffae3ae695d6c52e8c27fca21bc204b1247a01100df12d395448774d593",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/objects/convex/frl_apartment_chair_01_cv_decomp.glb"
+    },
+    {
+      "path": "configs/objects/frl_apartment_table_01.object_config.json",
+      "bytes": 682,
+      "sha256": "5ccafd87a9ee4a6c81de5952680ee066af36e8f909183b9c63e06284dab4e1aa",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/configs/objects/frl_apartment_table_01.object_config.json"
+    },
+    {
+      "path": "objects/frl_apartment_table_01.glb",
+      "bytes": 669376,
+      "sha256": "bb6c507acfc5677e9dfcb2cb15f78d55f4167d4ac7eaf4cf0c1ecc6b60b60e7d",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/objects/frl_apartment_table_01.glb"
+    },
+    {
+      "path": "objects/convex/frl_apartment_table_01_cv_decomp.glb",
+      "bytes": 14536,
+      "sha256": "02385e639eb88f63d210c6be014fddba29dea08d12d2d75a86c50dbe69469706",
+      "url": "https://huggingface.co/datasets/ai-habitat/ReplicaCAD_dataset/resolve/3e8c7fe5759f64bfcbc3882f9cdf6de97f82a06d/objects/convex/frl_apartment_table_01_cv_decomp.glb"
+    }
+  ],
+  "total_bytes": 8667421
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "resolution": 0.1,
+  "body": {"radius": 0.3, "height": 1.2},
+  "frame_width": 224,
+  "frame_height": 168,
+  "subset_budget": 8,
+  "selection": ["all", "interval", "coverage"],
+  "development_family": "analytic-development",
+  "evaluation_family": "programmatic-replica-furniture",
+  "frozen_before_evaluation": true,
+  "claim": "Controlled programmatic layouts, no independent-home generalization",
+  "unknown_pose": "unsupported by selected monocular metric model"
+}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CareSpace 3D｜空間通行研究台</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main class="workbench">
+    <header class="topbar">
+      <div><p class="kicker">CARESPACE / EVIDENCE VIEWER</p><h1>空間通行研究台</h1></div>
+      <div id="loadState" class="load-state" role="status">讀取研究資料…</div>
+    </header>
+
+    <section class="layout" aria-label="研究資料檢視器">
+      <aside class="panel controls" aria-label="研究條件">
+        <section><h2>研究條件</h2>
+          <label>案例<select id="caseSelect"></select></label>
+          <p id="caseDescription" class="description"></p>
+          <label>重建方法<select id="methodSelect"></select></label>
+          <div class="segmented" aria-label="檢視來源">
+            <button id="reconMode" class="active" type="button">重建證據</button>
+            <button id="oracleMode" type="button" aria-pressed="false">標註參考</button>
+          </div>
+          <p id="sourceNote" class="source-note">顯示有限觀測所重建的證據。</p>
+        </section>
+
+        <section><h2>通行模型</h2>
+          <div class="measure-row"><label>半徑 <span id="radiusValue"></span><input id="radius" type="range" min="0.1" max="0.7" step="0.05"></label></div>
+          <div class="assumptions"><span>高度 <strong id="heightValue">—</strong></span><span>姿態 <strong>已知</strong></span></div>
+          <p id="assumption" class="description"></p>
+        </section>
+
+        <section><h2>路徑端點</h2>
+          <div class="endpoint-tabs"><button id="pickStart" class="active" type="button">點選起點 S</button><button id="pickGoal" type="button">點選終點 G</button></div>
+          <div class="coordinate-grid">
+            <span></span><b>X</b><b>Z</b>
+            <label for="startX">S</label><input id="startX" type="number" step="0.1" aria-label="起點 X 座標"><input id="startZ" type="number" step="0.1" aria-label="起點 Z 座標">
+            <label for="goalX">G</label><input id="goalX" type="number" step="0.1" aria-label="終點 X 座標"><input id="goalZ" type="number" step="0.1" aria-label="終點 Z 座標">
+          </div>
+          <p class="hint">選擇 S / G 後點擊地面；方向鍵微調目前端點。</p>
+        </section>
+
+        <section id="observationSection"><h2>觀測影格</h2>
+          <label>顯示數量 <span id="frameCountValue"></span><input id="frameCount" type="range" min="0" step="1"></label>
+          <div id="frameStrip" class="frame-strip"></div>
+        </section>
+      </aside>
+
+      <section class="stage-shell" aria-label="三維空間">
+        <div class="axis axis-x"><span>− X</span><i></i><span>+ X</span></div>
+        <div class="axis axis-z"><span>+ Z</span><i></i><span>− Z</span></div>
+        <div id="viewport" tabindex="0" aria-label="可旋轉的三維重建視圖"></div>
+        <div class="legend"><span class="free">自由</span><span class="occupied">障礙投影</span><span class="unknown">未知</span><span class="narrow">狹窄帶 0.3–0.6m</span><span class="observed">觀測表面</span></div>
+        <div class="view-help">狹窄帶為網格中心至已知障礙／邊界的固定半徑淨空，非臨床門檻 · 拖曳旋轉 · 滾輪縮放</div>
+      </section>
+
+      <aside class="panel evidence" aria-label="通行結果與量測">
+        <section><p class="kicker">CONSERVATIVE REPLAN</p><div class="verdict"><span id="statusDot"></span><div><small>目前判定</small><strong id="resultStatus">—</strong></div></div><p id="resultReason" class="description"></p></section>
+        <section><h2>即時計算</h2><dl class="key-metrics"><div><dt>淨空估計</dt><dd id="clearance">—</dd></div><div><dt>路徑長度</dt><dd id="pathLength">—</dd></div><div><dt>網格解析度</dt><dd id="resolution">—</dd></div></dl></section>
+        <section><h2>同案例方法比較</h2><p class="comparison-note">保存結果：原始端點／預設半徑</p><div class="comparison-wrap"><table class="comparison"><thead><tr><th>方法</th><th>判定</th><th>影格</th><th>觀測</th><th>秒</th><th>深度 MAE</th></tr></thead><tbody id="comparisonBody"></tbody></table></div></section>
+        <section><h2>方法量測</h2><dl id="metrics" class="metrics"></dl></section>
+        <section><h2>資料身分</h2><dl class="identity"><div><dt>場景</dt><dd id="sceneId">—</dd></div><div><dt>分組</dt><dd id="splitFamily">—</dd></div><div><dt>網格</dt><dd id="gridShape">—</dd></div></dl></section>
+      </aside>
+    </section>
+    <footer>研究原型；通行判定受觀測、離散化與圓柱模型限制，不構成臨床或安全保證。</footer>
+    <dialog id="frameDialog" aria-labelledby="frameDialogTitle"><div class="dialog-head"><h2 id="frameDialogTitle">影格預覽</h2><button id="closeFrameDialog" type="button" aria-label="關閉影格預覽">關閉</button></div><div class="dialog-images"><figure><img id="dialogRgb" alt=""><figcaption>RGB</figcaption></figure><figure><img id="dialogDepth" alt=""><div id="dialogDepthMissing" class="depth-missing" hidden>此方法沒有可用的預測深度預覽</div><figcaption id="dialogDepthLabel">深度</figcaption></figure></div></dialog>
+  </main>
+  <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

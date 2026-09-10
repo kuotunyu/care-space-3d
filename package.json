@@ -1,0 +1,12 @@
+{
+  "name": "care-space-3d-viewer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "python -m http.server 8840 --bind 127.0.0.1"
+  },
+  "dependencies": {
+    "three": "0.174.0"
+  }
+}
