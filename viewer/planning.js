@@ -1,4 +1,10 @@
 // Shared browser connectivity primitive. Endpoints obey the same evidence rule as edges.
+export function parseEndpoint(x, z) {
+  if ([x, z].some(value => String(value).trim() === '')) return null;
+  const point = [Number(x), Number(z)];
+  return point.every(Number.isFinite) ? point : null;
+}
+
 export function bfs(start,goal,allowed,stateAt){
   if(!allowed(stateAt(...start))||!allowed(stateAt(...goal)))return [];
   const key=([x,z])=>`${x},${z}`,q=[start],parent=new Map([[key(start),null]]);

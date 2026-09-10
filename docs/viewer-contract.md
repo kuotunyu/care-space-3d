@@ -15,8 +15,8 @@ Grid lies at y=0.02, Y up. Draw unknown visibly. Method points represent observe
 Implement browser replan from states for endpoints/radius: any occupied footprint cell
 blocks, any unknown footprint cell makes center unknown; pad outside as blocked; disk
 threshold radius+sqrt(2)*resolution (same conservative margin as Python). Four-neighbor
-BFS path in free, then optimistic free+unknown. Path clearance is nearest known obstacle
-or boundary distance minus half-cell diagonal, limited to observed evidence.
+BFS path in free, then optimistic free+unknown. Path clearance is nearest non-free cell
+(unknown or occupied) or padded boundary distance minus half-cell diagonal.
 Start/end click controls plus numeric fields/keyboard. Before/after is case selection,
 never move geometry without regenerating artifacts. Static persisted cases are sufficient.
 All files local; dependency three==0.174.0 npm; no CDN, servers, frameworks or deployment.
@@ -34,3 +34,14 @@ Frame dialog uses learned_depth_preview only for DA3, and declares missing outpu
 Browser BFS checks start/goal admissibility before exploring; unknown candidate paths
 are colored unknown and never described as a passable path. Saved comparison rows
 retain original experiment endpoints/radius; interactive replan is separately labeled.
+
+Refinement: neutral blue-gray point display improves contrast without changing point
+coordinates; sensor RGB remains in frame previews and artifact colors. Unknown candidate
+paths are dashed and their lengths explicitly labeled candidate lengths. Endpoint circles
+show the chosen radius (the extra planner discretization margin is not drawn). Typed
+coordinates retain their precision; blank/non-finite coordinates suspend the verdict.
+Method switches retain the current query; case changes reset endpoints, and the explicit
+reset action restores endpoints plus study radius. Reference mode overlays geometry but
+the active method's reconstruction grid remains the only browser-planning input.
+Three.js redraws on changes/resizes and while OrbitControls damping settles, then stops.
+Stale GLTF callbacks are invalidated by content revision and dispose their whole hierarchy.
