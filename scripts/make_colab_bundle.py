@@ -46,6 +46,7 @@ print((PROJECT/'docs/results.md').read_text())
 """),cell("code","""# Optional notebook-local viewer; uses the same static frontend.
 if shutil.which('npm'):
     subprocess.run(['npm', 'ci'], cwd=PROJECT, check=True)
+    subprocess.run(['node', str(PROJECT/'scripts/build_diagnostics.mjs')], cwd=PROJECT, check=True)
     server = subprocess.Popen([PYTHON, '-m', 'http.server', '8840', '--bind', '127.0.0.1'], cwd=PROJECT)
     from google.colab import output
     output.serve_kernel_port_as_iframe(8840, path='/viewer/', height=800)

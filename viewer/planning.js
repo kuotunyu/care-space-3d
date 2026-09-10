@@ -5,6 +5,27 @@ export function parseEndpoint(x, z) {
   return point.every(Number.isFinite) ? point : null;
 }
 
+// Same circular footprint and outside-domain policy as the original browser planner.
+export function stateLookup(grid, states, radius) {
+  states=states??[]; // An unavailable reconstruction supplies no free evidence.
+  const [nx,nz]=grid.shape,res=grid.resolution,threshold=radius+Math.SQRT2*res;
+  const reach=Math.ceil(threshold/res),cache=new Int8Array(nx*nz).fill(2);
+  return (ix,iz)=>{
+    if(ix<0||iz<0||ix>=nx||iz>=nz)return 1;
+    const key=ix*nz+iz;if(cache[key]!==2)return cache[key];
+    let unknown=false;
+    for(let dx=-reach;dx<=reach;dx++)for(let dz=-reach;dz<=reach;dz++){
+      if(Math.hypot(dx*res,dz*res)>threshold)continue;
+      const x=ix+dx,z=iz+dz;
+      if(x<0||z<0||x>=nx||z>=nz)return cache[key]=1;
+      const value=states[x*nz+z]??-1;
+      if(value===1)return cache[key]=1;
+      if(value===-1)unknown=true;
+    }
+    return cache[key]=unknown?-1:0;
+  };
+}
+
 export function bfs(start,goal,allowed,stateAt){
   if(!allowed(stateAt(...start))||!allowed(stateAt(...goal)))return [];
   const key=([x,z])=>`${x},${z}`,q=[start],parent=new Map([[key(start),null]]);

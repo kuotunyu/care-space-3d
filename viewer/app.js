@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { bfs, parseEndpoint } from './planning.js';
+import { bfs, parseEndpoint, stateLookup } from './planning.js';
 import { createRenderScheduler, disposeObject } from './rendering.js';
+import { diagnose, chooseBaseline } from './diagnostics.js';
 
 const moduleStartedAt=performance.now();
 const COLORS={free:0x117d83,occupied:0xd66750,unknown:0xc19b43,narrow:0x886aa8,ink:0x152f43};
@@ -11,6 +12,7 @@ const ui=Object.fromEntries(['loadState','caseSelect','caseDescription','methodS
 let study,currentCase,currentMethod,pick='start',oracle=false,frameLimit=0;
 let scene,camera,renderer,controls,content,pathLine,markers,raycaster,mouse,groundPlane,oracleObject;
 let contentRevision=0,observedPoints,requestRender=()=>{},renderCount=0;
+let differenceOverlay=null,normalFloor=[];
 
 try { init3D(); bind(); bindCoordinateInput(); loadStudy(); }
 catch(error) { setFatal(`3D 視圖無法啟動（${error.message}）。請確認瀏覽器支援 WebGL，重新載入後再試。`); }
@@ -40,6 +42,7 @@ function setFatal(message){ui.loadState.textContent='資料載入失敗';ui.load
 
 function selectCase(index){
   currentCase=study.cases[index];
+  $('inspectDa3').hidden=!currentCase.methods?.some(m=>m.id==='da3-all');
   $('sceneTitle').textContent=currentCase.title||currentCase.id;
   ui.caseDescription.textContent=currentCase.description||'';
   ui.methodSelect.innerHTML=(currentCase.methods||[]).map((m,i)=>`<option value="${i}">${esc(m.label||m.id)}</option>`).join('');
@@ -91,6 +94,7 @@ function renderScene(){
   const groups={0:[],1:[],'-1':[]};for(let ix=0;ix<nx;ix++)for(let iz=0;iz<nz;iz++)groups[states[ix*nz+iz]??-1].push([ix,iz]);
   for(const key of ['0','-1','1']){const h=key==='1'?.12:.018;const geo=new THREE.BoxGeometry(res*.9,h,res*.9),mesh=new THREE.InstancedMesh(geo,mats[key],groups[key].length);const m=new THREE.Matrix4();groups[key].forEach(([ix,iz],i)=>mesh.setMatrixAt(i,m.makeTranslation(xmin+(ix+.5)*res,h/2+(key==='1'?0:.02),zmin+(iz+.5)*res)));content.add(mesh)}
   addNarrowBand();
+  normalFloor=[...content.children];
   const pos=currentMethod.points?.positions||[];
   if(pos.length){
     const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
@@ -100,7 +104,7 @@ function renderScene(){
   const grid=new THREE.GridHelper(Math.max(nx*res,nz*res),Math.max(nx*res,nz*res),0x9daeb9,0xc2cfd7);grid.position.set((currentCase.bounds[0]+currentCase.bounds[2])/2,-.005,(currentCase.bounds[1]+currentCase.bounds[3])/2);content.add(grid);
   addFrameMarkers();if(oracle)loadOracle();requestRender();
 }
-function clearContent(){contentRevision++;for(const child of [...content.children])disposeObject(child);oracleObject=null;observedPoints=null;requestRender()}
+function clearContent(){contentRevision++;for(const child of [...content.children])disposeObject(child);oracleObject=null;observedPoints=null;differenceOverlay=null;normalFloor=[];requestRender()}
 function loadOracle(){
   if(!currentCase.reference_mesh){ui.sourceNote.textContent='此案例沒有可用的標註參考網格。';ui.viewSource.textContent='無參考網格 · 仍顯示重建';return}
   const requestedRevision=contentRevision;
@@ -126,17 +130,52 @@ function replan(){
     drawPath([],'unknown');for(const child of [...markers.children])disposeObject(child);
     ui.resultStatus.textContent=ui.stageStatus.textContent='待輸入';ui.resultReason.textContent='請填入完整、有限的 X / Z 座標；空白不會自動當成 0。';
     ui.statusDot.style.background='#607585';ui.stageStatus.dataset.status='invalid';
-    ui.clearance.textContent=ui.pathLength.textContent='—';requestRender();return;
+    ui.clearance.textContent=ui.pathLength.textContent='—';updateDiagnostics();requestRender();return;
   }
-  const blocked=classifyCenters(radius),s=worldCell(start),g=worldCell(goal);let status='unknown',path=[],reason='端點或路徑穿越未觀測區域。';
+  const blocked=stateLookup(currentCase,currentMethod.states,radius),s=worldCell(start),g=worldCell(goal);let status='unknown',path=[],reason='端點或路徑穿越未觀測區域。';
   if(!s||!g||blocked(s[0],s[1])===1||blocked(g[0],g[1])===1){status='blocked';reason='端點位於障礙膨脹區或研究邊界外。'}else{path=bfs(s,g,v=>v===0,blocked);if(path.length){status='passable';reason='已知自由空間存在四鄰接通路。'}else{const optimistic=bfs(s,g,v=>v!==1,blocked);if(!optimistic.length){status='blocked';reason='即使允許穿越未知區，仍無可連通路徑。'}else{path=optimistic}}}
   const worldPath=path.map(([ix,iz])=>cellWorld(ix,iz));drawPath(worldPath,status);drawMarkers(start,goal);
   const clearance=status==='passable'&&path.length?pathClearance(path):null;ui.resultStatus.textContent={passable:'可通行',blocked:'阻斷',unknown:'未知'}[status];ui.resultReason.textContent=reason;ui.statusDot.style.background={passable:'#117d83',blocked:'#d66750',unknown:'#c19b43'}[status];ui.clearance.textContent=clearance==null?'—':fmtM(clearance);ui.pathLength.textContent=worldPath.length?fmtM((worldPath.length-1)*currentCase.resolution):'—';
   ui.stageStatus.textContent=ui.resultStatus.textContent;ui.stageStatus.dataset.status=status;
-  ui.pathLengthLabel.textContent=status==='unknown'?'候選路線長度':'路徑長度';requestRender();
+  ui.pathLengthLabel.textContent=status==='unknown'?'候選路線長度':'路徑長度';updateDiagnostics();requestRender();
 }
 
-function classifyCenters(radius){const [nx,nz]=currentCase.shape,res=currentCase.resolution,states=currentMethod.states||[],threshold=radius+Math.SQRT2*res;return(ix,iz)=>{if(ix<0||iz<0||ix>=nx||iz>=nz)return 1;let unknown=false;const reach=Math.ceil(threshold/res);for(let dx=-reach;dx<=reach;dx++)for(let dz=-reach;dz<=reach;dz++){if(Math.hypot(dx*res,dz*res)>threshold)continue;const x=ix+dx,z=iz+dz;if(x<0||z<0||x>=nx||z>=nz)return 1;const v=states[x*nz+z]??-1;if(v===1)return 1;if(v===-1)unknown=true}return unknown?-1:0}}
+function updateDiagnostics(){
+  if(differenceOverlay){disposeObject(differenceOverlay);differenceOverlay=null}
+  for(const object of normalFloor)object.visible=true;
+  $('normalLegend').hidden=false;$('differenceLegend').hidden=true;$('differenceSource').hidden=true;
+  const baseline=currentMethod&&chooseBaseline(currentCase.methods,currentMethod),start=getEndpoint('start'),goal=getEndpoint('goal');
+  if(!baseline)$('showDifference').checked=false;
+  $('showDifference').disabled=!baseline||!start||!goal;
+  if(!baseline||!start||!goal){
+    $('diagnosticPair').textContent=!currentMethod?'無方法資料':!baseline?'目前方法沒有可配對的 RGB-D 基線；可切換 DA3 或選樣方法。':'請先填入完整端點。';
+    $('diagnosticDetails').replaceChildren();requestRender();return;
+  }
+  try{
+    const d=diagnose(currentCase,baseline,currentMethod,+ui.radius.value,start,goal),labels={'-1':'未知',0:'自由',1:'障礙／邊界'};
+    $('diagnosticPair').textContent=`${baseline.label} → ${currentMethod.label}；${d.same_frames?'相同觀測影格':'觀測子集不同'}`;
+    const p=d.path,location=p?.first_restricted_center?.map(v=>v.toFixed(2)).join(', ');
+    const rows=[`共同已觀測格中的障礙分歧：${d.counts.conflict} / ${d.known_both}（${d.known_conflict_fraction==null?'N/A':percent(d.known_conflict_fraction)}）`,
+      `基線自由→目前障礙：${d.matrix[1][2]} 格；基線障礙→目前自由：${d.matrix[2][1]} 格。`,
+      `已觀測→未知：${d.counts.lost} 格；未知→已觀測：${d.counts.gained} 格（全圖 ${d.total} 格）`,
+      `目前方法的圓柱中心：起點 ${labels[d.endpoints.selected[0]]}，終點 ${labels[d.endpoints.selected[1]]}。`,
+      p?`沿基線自由路徑的 ${p.total} 個中心，目前方法有 ${p.blocked} 個受障礙限制、${p.unknown} 個為未知。${location?`第一個受限中心 X/Z = (${location}) m。`:''}`:'基線沒有已知自由路徑，路徑局部統計不適用。',
+      '單條基线路徑受限不代表沒有其他路徑；目前判定另由完整連通搜尋得出。'];
+    $('diagnosticDetails').replaceChildren(...rows.map(text=>{const p=document.createElement('p');p.textContent=text;return p}));
+    if($('showDifference').checked){
+      differenceOverlay=new THREE.Group();content.add(differenceOverlay);
+      const colors={conflict:0xa5457c,lost:0xa17b28,gained:0x2874a8},res=currentCase.resolution,nz=currentCase.shape[1];
+      for(const [kind,indices] of Object.entries(d.groups)){
+        if(!indices.length)continue;
+        const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(res*.9,.016,res*.9),new THREE.MeshBasicMaterial({color:colors[kind]}),indices.length),matrix=new THREE.Matrix4();
+        indices.forEach((index,i)=>{const [x,z]=cellWorld(Math.floor(index/nz),index%nz);mesh.setMatrixAt(i,matrix.makeTranslation(x,.055,z))});differenceOverlay.add(mesh);
+      }
+      for(const object of normalFloor)object.visible=false;
+      $('normalLegend').hidden=true;$('differenceLegend').hidden=false;$('differenceSource').hidden=false;
+    }
+  }catch(error){$('diagnosticPair').textContent=`無法比較：${error.message}`;$('diagnosticDetails').replaceChildren();$('showDifference').disabled=true}
+  requestRender();
+}
 function pathClearance(path){const [nx,nz]=currentCase.shape,res=currentCase.resolution,states=currentMethod.states||[];let best=Infinity;for(const [x,z] of path){best=Math.min(best,(x+1)*res,(z+1)*res,(nx-x)*res,(nz-z)*res);for(let ox=0;ox<nx;ox++)for(let oz=0;oz<nz;oz++)if((states[ox*nz+oz]??-1)!==0)best=Math.min(best,Math.hypot((x-ox)*res,(z-oz)*res))}return Math.max(0,best-res/Math.SQRT2)}
 function drawPath(points,status){
   if(pathLine){disposeObject(pathLine);pathLine=null}
@@ -177,8 +216,11 @@ function renderEmptyMethod(){
   ui.viewSource.textContent='無重建證據';ui.clearance.textContent=ui.pathLength.textContent='—';
   for(const id of ['metrics','frameStrip','comparisonBody','coverageBar'])ui[id].replaceChildren();
   ui.coverageSummary.textContent='尚無網格證據';ui.observationSection.hidden=true;requestRender();
+  updateDiagnostics();
 }
 function bind(){
+  $('showDifference').addEventListener('change',updateDiagnostics);
+  $('inspectDa3').addEventListener('click',()=>{const index=currentCase.methods.findIndex(m=>m.id==='da3-all');if(index>=0){$('showDifference').checked=true;ui.showPoints.checked=false;selectMethod(index);fitCamera(true)}});
   ui.caseSelect.addEventListener('change',()=>selectCase(+ui.caseSelect.value));
   ui.methodSelect.addEventListener('change',()=>selectMethod(+ui.methodSelect.value));
   ui.comparisonBody.addEventListener('click',e=>{const button=e.target.closest('[data-method-index]');if(button)selectMethod(+button.dataset.methodIndex)});

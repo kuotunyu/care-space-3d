@@ -139,3 +139,8 @@ dialog::backdrop { background: rgba(21,47,67,.58); }
   footer { text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+/* Difference colors encode pairwise evidence transitions, not oracle error. */
+.legend .conflict { color: #923467; }.legend .lost { color: #795716; }.legend .gained { color: #205f8b; }
+#differenceSource { position: absolute; left: 14px; top: 104px; margin: 0; padding: 4px 6px; font-size: 10px; color: #923467; background: #fff5fa; pointer-events: none; }
+#diagnosticDetails p { margin: 10px 0 0; font-size: 11px; }
+@media(max-width:700px) { #differenceSource { top: 152px; left: 10px; }.view-tools { right: 10px; } }

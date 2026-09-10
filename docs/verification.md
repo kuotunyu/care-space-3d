@@ -64,3 +64,28 @@ dependency licenses are retained separately. No remote repository, push or deplo
   mismatch. Replanning now preserves typed precision rather than rounding the display.
 - No dataset, model, dependency version, reconstruction algorithm or recorded experiment
   was changed during this refinement.
+
+## Pairwise diagnostics — 2026-09-10
+
+- Python: 19 tests passed; Node: 11 tests passed. New tests cover both directions of
+  known occupancy conflict, unknown evidence transitions, no free-path denominator,
+  alternate routes despite a restricted baseline path, absent states, incompatible
+  grid extents, and strict DA3 frame-ID pairing (including different frame order).
+- Read-only review checked 329,868 valid-evidence classifier lookups against the prior
+  browser implementation. Missing-state fallback, frame-identity validation and bounds
+  compatibility issues identified in review are corrected and regression-covered.
+- Browser: all 15 evaluation case/method statuses unchanged; RGB-D subsampling explicitly
+  labels changed frame subsets, DA3 all/interval pairs with corresponding RGB-D inputs.
+- Edited normal start X from 1.25 to 3.25 m: baseline path denominator changed 56→36,
+  selected-method constrained-center count 43→23, first restricted center updated.
+  Keyboard-cleared coordinate hid the difference overlay and suspended diagnosis.
+- The diagnostic action uses top view and hides point-cloud clutter. Switching back to
+  RGB-D all disables self-comparison; unknown agreements are explicitly not labeled free.
+- Desktop and 390×844 viewport inspected; nonzero canvas, no horizontal page overflow,
+  difference legend/source visible, no browser errors. Viewport override reset.
+- Node report produced 18 development/evaluation comparisons, 0 failed diagnoses, using
+  the same browser module. Report includes study/module/builder hashes and node version;
+  unavailable pairings or invalid evidence are retained as diagnostic failures.
+- Original study remains byte-identical: SHA256
+  `e368c46e4eda63f21eb17214b95a3f6b66ace2117b91a723b6b63d8b2895a4c2`.
+  No model inference, threshold tuning, new dependencies or GPU work in this addition.

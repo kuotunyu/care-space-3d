@@ -29,6 +29,13 @@ node --test tests/browser-*.test.mjs
 觀測影格的「預覽張數」只改縮圖和相機標記；選擇重建方法才切換其觀測子集。
 展示在操作與資料變更時重繪，閒置時不持續渲染。
 
+「檢視 DA3 分歧」會切換至俯視差異圖：標出自由／障礙不一致、已觀測變未知、
+未知變已觀測的位置。DA3 必須配對相同影格的 RGB-D；基線不是完整真值。
+診斷會指出端點膨脹狀態、基线路徑受限中心；不把單條路徑受阻當作沒有替代路徑。
+重新產生診斷報告：`node scripts/build_diagnostics.mjs`。
+結果在 [方法差異診斷](docs/diagnostics.md) 與 `artifacts/diagnostics.json`，含完整矩陣、
+資料與程式 SHA256；介面直接用同一套程式計算當前查詢，不載入過期診斷快取。
+
 ## 從空環境重現
 
 需 Git、curl、Python 3.11（或 uv 管理的 3.11）、Node/npm。所有相依只裝在本專案 venv。
@@ -43,6 +50,7 @@ npm ci
 .venv/Scripts/python scripts/run_study.py
 .venv/Scripts/python scripts/run_learning.py
 .venv/Scripts/python scripts/build_report.py
+node scripts/build_diagnostics.mjs
 .venv/Scripts/python -m pytest -q
 ./scripts/serve.ps1
 ```

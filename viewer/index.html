@@ -55,8 +55,10 @@
       <section class="stage-shell" aria-label="三維空間">
         <div id="viewport" tabindex="0" aria-label="可旋轉的三維重建視圖"></div>
         <div class="stage-heading"><div><strong id="sceneTitle"></strong><span id="viewSource">重建證據 · 已知相機姿態</span></div><strong id="stageStatus" aria-hidden="true">—</strong></div>
-        <div class="view-tools" aria-label="視角與圖層"><button id="fitView" type="button">回到全景</button><button id="topView" type="button">俯視分析</button><label><input id="showPoints" type="checkbox" checked>觀測點雲</label></div>
-        <div class="legend"><span class="free">自由</span><span class="occupied">障礙投影</span><span class="unknown">未知</span><span class="narrow">狹窄帶</span><span class="observed">觀測表面</span></div>
+        <div class="view-tools" aria-label="視角與圖層"><button id="fitView" type="button">回到全景</button><button id="topView" type="button">俯視分析</button><label><input id="showPoints" type="checkbox" checked>觀測點雲</label><label><input id="showDifference" type="checkbox">方法差異</label></div>
+        <div id="normalLegend" class="legend"><span class="free">自由</span><span class="occupied">障礙投影</span><span class="unknown">未知</span><span class="narrow">狹窄帶</span><span class="observed">觀測表面</span></div>
+        <div id="differenceLegend" class="legend" hidden><span class="conflict">自由／障礙不一致</span><span class="lost">已觀測→未知</span><span class="gained">未知→已觀測</span></div>
+        <p id="differenceSource" hidden>方法分歧 · 非真值誤差；未著色也可能共同未知</p>
         <div class="view-help">實線：自由通路 · 虛線：待觀測候選路線<br>拖曳旋轉 · 滾輪縮放 · 點雲以藍灰顯示</div>
       </section>
       <section class="panel comparison-panel" aria-labelledby="comparisonTitle"><h2 id="comparisonTitle">同案例方法比較</h2><p class="comparison-note">保存結果：原始端點／預設半徑；點選方法可切換檢視。</p><div class="comparison-wrap"><table class="comparison"><thead><tr><th scope="col">方法</th><th scope="col">判定</th><th scope="col">影格</th><th scope="col">觀測比例</th><th scope="col">秒</th><th scope="col">深度 MAE</th></tr></thead><tbody id="comparisonBody"></tbody></table></div></section>
@@ -66,6 +68,7 @@
         <section aria-live="polite" aria-atomic="true"><div class="verdict"><span id="statusDot"></span><div><small>目前端點與半徑</small><strong id="resultStatus">—</strong></div></div><p id="resultReason" class="description"></p></section>
         <section><h2>即時計算</h2><dl class="key-metrics"><div><dt>路徑半徑淨空</dt><dd id="clearance">—</dd></div><div><dt id="pathLengthLabel">路徑長度</dt><dd id="pathLength">—</dd></div><div><dt>網格解析度</dt><dd id="resolution">—</dd></div></dl><p class="hint">淨空是路徑中心到非自由區的估計距離，不是門寬。</p></section>
         <section><h2>觀測覆蓋</h2><div id="coverageBar" class="coverage-bar" aria-hidden="true"></div><p id="coverageSummary" class="description"></p><p class="hint">狹窄帶：至已知障礙或邊界的固定半徑淨空 0.30–0.60 m，不隨圓柱半徑改變。</p></section>
+        <section><h2>方法差異診斷</h2><button id="inspectDa3" class="text-button" type="button">檢視 DA3 分歧</button><p id="diagnosticPair" class="description"></p><div id="diagnosticDetails" class="description"></div><p class="hint">基線也是重建結果；分歧不等於真值誤差。箭頭表示基線→目前方法。</p></section>
         <section><details><summary>完整方法量測</summary><dl id="metrics" class="metrics"></dl></details></section>
         <section><details><summary>資料身分</summary><dl class="identity"><div><dt>場景</dt><dd id="sceneId">—</dd></div><div><dt>分組</dt><dd id="splitFamily">—</dd></div><div><dt>網格</dt><dd id="gridShape">—</dd></div></dl></details></section>
       </aside>
