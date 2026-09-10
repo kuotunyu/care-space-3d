@@ -9,7 +9,13 @@ def cell(kind,source):
     value={"cell_type":kind,"metadata":{},"source":source.splitlines(keepends=True)}
     if kind=="code":value.update(execution_count=None,outputs=[])
     return value
-cells=[cell("markdown","""# CareSpace 3D · CPU reproducibility launcher
+cells=[cell("markdown","""# CareSpace 3D · CPU 重現驗證 v1
+
+操作指南：docs/colab-start-here.md。先只執行第一個程式碼區塊；看到
+29 passed 後停止，確認結果再繼續。不要一開始選「全部執行」。
+雲端來源 ZIP：我的雲端硬碟 / CareSpace3D / care-space-3d-source.zip
+Colab 讀取路徑：/content/drive/MyDrive/CareSpace3D/care-space-3d-source.zip
+重現輸出目錄：/content/drive/MyDrive/CareSpace3D/work-v01/
 
 This notebook installs and invokes the same project core. It contains no separate
 geometry/model implementation. It has not been executed in this development session.
@@ -56,7 +62,7 @@ else:
     print('Node/npm unavailable; analysis artifacts are saved. Use the local viewer commands in README.md.')
 """)]
 notebook={"cells":cells,"metadata":{"kernelspec":{"display_name":"Python 3","language":"python","name":"python3"}},"nbformat":4,"nbformat_minor":5}
-(root/"notebooks/colab.ipynb").write_text(json.dumps(notebook,indent=2),encoding="utf8")
+(root/"notebooks/CareSpace3D_CPU_Reproduction_v1.ipynb").write_text(json.dumps(notebook,indent=2),encoding="utf8")
 target=root/"artifacts/care-space-3d-source.zip"
 with ZipFile(target,"w",ZIP_DEFLATED) as z:
     for folder in ["src","scripts","configs","viewer","docs","notebooks","tests"]:

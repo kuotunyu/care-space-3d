@@ -29,7 +29,7 @@ no modification of Ubuntu-bench; no oracle in inference; unknown must be retaine
   Contract: docs/viewer-contract.md; test click/keyboard cases, selectors and overlays.
   Viewer is served only on 127.0.0.1, with locally installed Three.js.
 - [x] Task 5: one actual learned method, CPU smoke study and resumable Colab launcher.
-  Files: src/carespace/learned.py, scripts/run_learning.py, notebooks/colab.ipynb.
+  Files: src/carespace/learned.py, scripts/run_learning.py, notebooks/CareSpace3D_CPU_Reproduction_v1.ipynb.
   Pin upstream code/model revision, verify canonical focal scaling against upstream,
   predict RGB-only per frame, record device/timing/errors and preserve failed frames.
   Compare known-pose learned fusion and baseline. Unknown-pose status unsupported.
