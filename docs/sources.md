@@ -54,5 +54,7 @@ The [official Splatfacto documentation](https://docs.nerf.studio/nerfology/metho
 does not turn appearance Gaussians into collision evidence; the small Three.js viewer
 meets this version's display need without an additional CUDA training environment.
 
-No repository-wide license is assigned to third-party data/weights. No remote was
-created, no push/deployment happened, and no paid inference service was used.
+The root MIT license applies to original project work, not third-party data/weights.
+See ../THIRD_PARTY_NOTICES.md. The private GitHub repository was created and pushed
+with user authorization on 2026-09-11. No public deployment or paid inference service
+was used.
