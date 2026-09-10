@@ -115,7 +115,7 @@ ReplicaCAD 網站寫 CC BY 4.0，但固定版本 LICENSE.txt 寫 **CC BY-NC 4.0*
 
 第一次操作請依 [Colab 明確路徑與停止點](docs/colab-start-here.md)。
 
-[CareSpace3D_CPU_Reproduction_v1.ipynb](notebooks/CareSpace3D_CPU_Reproduction_v1.ipynb) 僅安裝/啟動相同核心，不重寫模型與幾何。
+[CareSpace3D_CPU_Reproduction_v1_1.ipynb](notebooks/CareSpace3D_CPU_Reproduction_v1_1.ipynb) 僅安裝/啟動相同核心，不重寫模型與幾何。
 執行 `scripts/make_colab_bundle.py` 取得 `artifacts/care-space-3d-source.zip`，放入
 自己的 Drive `CareSpace3D/` 後執行 notebook。下載/模型/結果持久保存，可中斷恢復。
 本次沒有執行 Colab；CPU 路徑不假設會分到特定 GPU。GPU adapter 尚未驗證。

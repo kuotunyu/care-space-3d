@@ -61,7 +61,7 @@
 | 固定規則的探索性負結果 | [降為未知實驗](abstention.md)；未變成預設方法 |
 | 版本、授權與限制 | [來源](sources.md)、[失敗紀錄](failure-log.md) |
 | 測試與實際驗證範圍 | [驗證紀錄](verification.md) |
-| 同核心重現 | 根目錄 README；`notebooks/CareSpace3D_CPU_Reproduction_v1.ipynb`；`artifacts/care-space-3d-source.zip` |
+| 同核心重現 | 根目錄 README；`notebooks/CareSpace3D_CPU_Reproduction_v1_1.ipynb`；`artifacts/care-space-3d-source.zip` |
 
 第一版本機核心已交付。來源 ZIP 含測試，解壓後已用本機既有 Python 相依與
 獨立 Node 安裝驗證；Colab notebook 尚未實跑，GPU adapter 未驗證。

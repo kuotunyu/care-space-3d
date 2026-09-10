@@ -9,7 +9,7 @@
 | 用途 | 完整路徑 |
 |---|---|
 | 上傳到 Drive 的來源 ZIP | `D:/AI-Portfolio/CC_github部隊/care-space-3d/artifacts/care-space-3d-source.zip` |
-| 在 Colab 開啟的 notebook | `D:/AI-Portfolio/CC_github部隊/care-space-3d/notebooks/CareSpace3D_CPU_Reproduction_v1.ipynb` |
+| 在 Colab 開啟的 notebook | `D:/AI-Portfolio/CC_github部隊/care-space-3d/notebooks/CareSpace3D_CPU_Reproduction_v1_1.ipynb` |
 
 舊名 colab.ipynb 已更名，不再作為本機入口。CPU 表示使用處理器；v1 是第一版流程。
 
@@ -32,7 +32,7 @@
 1. 完成上述 Drive ZIP 上傳，確認檔名和所在資料夾。
 2. 開啟 https://colab.research.google.com/ ，從本機上傳上述完整名稱的 notebook。
    不要誤選 ZIP，也不要再開舊名 colab.ipynb。
-3. 確認頁面標題為 CareSpace3D_CPU_Reproduction_v1.ipynb。
+3. 確認頁面標題為 CareSpace3D_CPU_Reproduction_v1_1.ipynb。
    若要在 Drive 保存 notebook，放在 CareSpace3D 資料夾；程式不依賴 notebook 本身的位置。
 4. 使用 Python 3，硬體加速器選 CPU／無。不要連線到本機執行階段。
 5. 只按第一個程式碼區塊左側的執行鈕（內容以 from google.colab import drive 開始）。
@@ -43,3 +43,16 @@
    更換套件或提供登入密碼／驗證碼。
 
 Colab 尚未實跑；本機測試通過不代表雲端相依安装一定成功。
+
+## v1.1：Colab Python 3.13 啟動修正
+
+舊版直接使用 Colab 系統 Python 建立 venv，在使用者環境失敗；堆疊顯示
+Python 3.13，亦超出本專案 >=3.11,<3.13 的範圍。缺少 venv 的原始輸出，
+不將 ensurepip 缺失宣稱為已確認原因。
+新版 uv==0.11.18 使用 managed Python 3.11.15，環境位於
+`/content/carespace-py311-v1/`，不使用先前失敗的 `/content/carespace-venv/`。
+每個安裝階段列出合併輸出，失敗時停止。成功多顯示 INSTALL_CHECK_OK。
+CPU／None；首次安裝估計10～20分鐘，非Colab實測保證。
+更新時只需上傳新版 v1_1 notebook，先前 Drive 來源 ZIP 可供此次安裝使用；
+核心依賴未變。無需刪除 Drive 的 work-v01 或先前結果。
+uv Python 管理來源：https://docs.astral.sh/uv/concepts/python-versions/
