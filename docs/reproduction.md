@@ -40,10 +40,21 @@ node --test tests/browser-*.test.mjs
 
 ## 從空環境重現
 
-需 Git、curl、Python 3.11（或 uv 管理的 3.11）、Node/npm。所有相依只裝在本專案 venv。
+以下只供第一次建立新工作目錄；已有本專案的人使用上方「現有工作目錄直接執行」，不需重新下載或重跑研究。
+需 Git、curl、uv、Node/npm；uv 會取得 Python 3.11.15。使用 **CPU**，不需 GPU 或 Colab。
+所有相依只裝在本專案 venv。
+
+先在 PowerShell 切換到你選定的上層資料夾，確認其下沒有同名 `care-space-3d` 資料夾，再執行：
 
 ```powershell
-uv venv --python 3.11 .venv
+git clone https://github.com/kuotunyu/care-space-3d.git
+Set-Location care-space-3d
+```
+
+後續命令都在這個 repo 根目錄執行。以下逐行執行，任一步出現錯誤便停止；不要跳過錯誤繼續。
+
+```powershell
+uv venv --python 3.11.15 .venv
 uv pip install --python .venv/Scripts/python.exe --index-strategy unsafe-best-match -r requirements-cpu.lock
 uv pip install --python .venv/Scripts/python.exe --no-deps -e .
 npm ci
@@ -64,8 +75,12 @@ Linux 將 `.venv/Scripts/python` 換成 `.venv/bin/python`，啟動 viewer 用
 安裝學習式依賴前也可先只安裝 `-e . pytest==8.3.5 embreex==2.17.7.post6` 跑 CPU 基線。
 
 資料逐檔下載共 **8.67 MB**；只下載一個 **1.34 GB** 模型權重。模型/程式固定 revision
-且驗 SHA256；完整安裝版本在 requirements-cpu.lock。沒有 latest 模型別名、付費 API、
-GitHub repo 建立、push 或公開部署。
+且驗 SHA256；完整安裝版本在 requirements-cpu.lock。上述命令不會建立或推送 GitHub repo，
+也不會部署網站或使用付費 API。來源 repository 已公開，研究資產須另外下載。
+
+首次安裝與下載可預留 10～30 分鐘，另留 10～30 分鐘執行研究與診斷；這是操作時間估算，
+不是硬體效能保證。既有本機 CPU 學習流程曾記錄約 218 秒，但不能套用到其他電腦或完整安裝。
+只開啟已有結果的 Viewer 不需再次執行下載、重建或模型腳本。
 
 `run_study.py` 重新生成基線並歸檔舊 study；`run_learning.py` 逐影格快取可恢復。
 場景幾何、RGB/K/姿態、配置與重建版本不一致會拒用舊結果。

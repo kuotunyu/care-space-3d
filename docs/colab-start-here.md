@@ -1,6 +1,7 @@
 # CareSpace 3D：Colab 第一次操作指南
 
-這次只驗證 CPU 安裝與測試，不使用 GPU、不先執行模型。
+已完成驗收的人不需重跑；以下供日後建立新執行階段使用。
+全程選 **CPU／無硬體加速器**。先完成安裝與測試，再分段執行研究與展示。
 
 ## 本機檔案（Windows）
 
@@ -22,7 +23,7 @@
 - Drive 網頁位置：`我的雲端硬碟 / CareSpace3D / care-space-3d-source.zip`
 - 程式掛載後讀取：`/content/drive/MyDrive/CareSpace3D/care-space-3d-source.zip`
 - 程式自動建立的工作目錄：`我的雲端硬碟 / CareSpace3D / work-v01/`
-- 未來結果位置：`我的雲端硬碟 / CareSpace3D / work-v01 / artifacts/`
+- 結果位置：`我的雲端硬碟 / CareSpace3D / work-v01 / artifacts/`
 
 不要自行建立 work-v01 或搬動其內檔案。若來源 ZIP 已存在，更新同一檔案，
 避免出現名稱帶 (1) 的副本；不需要刪除既有 work-v01 結果。
@@ -37,13 +38,43 @@
 4. 使用 Python 3，硬體加速器選 CPU／無。不要連線到本機執行階段。
 5. 只按第一個程式碼區塊左側的執行鈕（內容以 from google.colab import drive 開始）。
    不要選「全部執行」。由本人完成 Google Drive 授權，選擇上傳 ZIP 的同一帳號。
-6. 等待安裝與測試結束。成功應出現 `29 passed`。此時停止，回報結果。
+6. 等待安裝與測試結束。成功應出現 `29 passed` 與 `INSTALL_CHECK_OK`。先停在這個檢查點，確認兩者都出現，再依下一節繼續。
    此區塊不下載模型；後續區塊才會取得家具資料與約 1.34 GB 權重。
-7. 若紅色錯誤出現，停止後续區塊，提供最後一段錯誤文字。不必自行修改程式、
+7. 若紅色錯誤出現，停止後續區塊，提供最後一段錯誤文字。不必自行修改程式、
    更換套件或提供登入密碼／驗證碼。
 
 v1.1 已依使用者提供的 Colab 輸出與截圖完成 CPU 重現及三案例展示驗收。
 新執行階段仍須依序安裝並確認輸出；不保證未來平台環境不變。
+
+## 安裝成功後：研究與展示
+
+只在上方兩個成功訊息都出現後繼續，不使用「全部執行」。
+
+1. 執行**第二個程式碼區塊**，開頭註解是 `Downloads resume; existing matching predictions are reused.`。
+   它會下載資料／權重、執行基線與 DA3、生成報告。維持 CPU，不需更換執行階段。
+   第一次可預留 20～60 分鐘；這是含下載與 Drive I/O 的排程估算，不是 Colab 實測效能。
+   有相符快取時可重用，但不要為了追求較短時間刪除或搬動結果。
+2. 等第二個區塊正常結束且沒有錯誤，再執行**第三個程式碼區塊**，開頭註解是 `Optional notebook-local viewer`。
+   此步安裝前端相依、測試並開啟工作台；可預留 1～5 分鐘，取決於下載速度。
+3. 使用 `RGB-D · 全部觀測`，依序查看通道開放、沙發移至通道、觀測不足；還原實驗端點與半徑後，
+   預期分別為可通行、阻斷、未知。DA3 在開放通道判阻斷是保留的負結果，不是安裝失敗。
+
+## 完成後：保存與關閉
+
+先等執行中的區塊正常結束，再確認 Drive 中以下檔案存在且可以開啟：
+
+| 內容 | Colab 掛載後的完整路徑 |
+|---|---|
+| 研究資料 | `/content/drive/MyDrive/CareSpace3D/work-v01/artifacts/study.json` |
+| 可讀報告 | `/content/drive/MyDrive/CareSpace3D/work-v01/docs/results.md` |
+| 模型預測快取 | `/content/drive/MyDrive/CareSpace3D/work-v01/artifacts/predictions/` |
+
+在 Drive 網頁對應 `我的雲端硬碟 / CareSpace3D / work-v01 /` 下的同名位置。
+這些檔案留在 Drive，**不會自動同步到 Windows 的本機專案路徑**。
+Notebook 如有修改，先等 Colab 顯示已儲存，再使用「執行階段」中的中斷連線／刪除執行階段功能，最後關閉分頁。
+只關瀏覽器分頁不代表運算已停止。這裡刪除的是臨時執行階段，不要刪除 Drive 裡的 `CareSpace3D` 資料夾。
+下次連線仍須先執行第一個安裝區塊；環境在 `/content/carespace-py311-v1/`，可能隨執行階段回收。
+執行階段與關閉行為依 [Colab 官方 FAQ](https://research.google.com/colaboratory/intl/en-GB/faq.html) 核對。
 
 ## v1.1：Colab Python 3.13 啟動修正
 
