@@ -241,3 +241,16 @@ Remaining unverified: GPU, real touch, screen reader, 200% zoom and exhaustive c
 UI/error recovery. Unknown poses and richer body models are future scope. No GitHub
 creation, push or public deployment. Earlier unverified notes above describe their
 historical checkpoints, superseded only within the evidence scope recorded here.
+
+## Private GitHub handoff — 2026-09-11
+
+User authorized the proposed private repository creation and push. Verified active
+GitHub account kuotunyu; the repository lookup returned 404 before creation.
+All historical Git object paths were checked for data/models/artifacts/third_party,
+environments, images, archives and model arrays; no matching paths were found.
+156 historical blobs were scanned for common credential patterns with no hits;
+this is a bounded pattern check, not proof of absence of every possible secret.
+Created kuotunyu/care-space-3d as private and pushed local work/local-mvp to main.
+No dataset, weights, research artifacts or user screenshots were uploaded.
+No public deployment or visibility change was performed. Earlier no-remote notes
+record the state before this explicitly authorized handoff.
