@@ -39,6 +39,7 @@ subprocess.run([sys.executable, '-m', 'venv', str(ENV)], check=True)
 PYTHON = str(ENV / 'bin/python')
 subprocess.run([PYTHON, '-m', 'pip', 'install', '-r', str(PROJECT/'requirements-cpu.lock')], check=True)
 subprocess.run([PYTHON, '-m', 'pip', 'install', '--no-deps', '-e', str(PROJECT)], check=True)
+subprocess.run([PYTHON, '-m', 'pytest', '-q', str(PROJECT/'tests')], cwd=PROJECT, check=True)
 """),cell("code","""# Downloads resume; existing matching predictions are reused.
 for script in ['fetch_assets.py', 'fetch_model.py', 'run_study.py', 'run_learning.py', 'build_report.py', 'build_depth_audit.py', 'run_abstention.py']:
     subprocess.run([PYTHON, str(PROJECT/'scripts'/script)], cwd=PROJECT, check=True)
@@ -46,6 +47,7 @@ print((PROJECT/'docs/results.md').read_text())
 """),cell("code","""# Optional notebook-local viewer; uses the same static frontend.
 if shutil.which('npm'):
     subprocess.run(['npm', 'ci'], cwd=PROJECT, check=True)
+    subprocess.run(['node', '--test', *map(str, sorted((PROJECT/'tests').glob('browser-*.test.mjs')))], cwd=PROJECT, check=True)
     subprocess.run(['node', str(PROJECT/'scripts/build_diagnostics.mjs')], cwd=PROJECT, check=True)
     server = subprocess.Popen([PYTHON, '-m', 'http.server', '8840', '--bind', '127.0.0.1'], cwd=PROJECT)
     from google.colab import output
@@ -57,7 +59,7 @@ notebook={"cells":cells,"metadata":{"kernelspec":{"display_name":"Python 3","lan
 (root/"notebooks/colab.ipynb").write_text(json.dumps(notebook,indent=2),encoding="utf8")
 target=root/"artifacts/care-space-3d-source.zip"
 with ZipFile(target,"w",ZIP_DEFLATED) as z:
-    for folder in ["src","scripts","configs","viewer","docs","notebooks"]:
+    for folder in ["src","scripts","configs","viewer","docs","notebooks","tests"]:
         for p in (root/folder).rglob("*"):
             if p.is_file() and "__pycache__" not in p.parts:z.write(p,p.relative_to(root).as_posix())
     for filename in ["pyproject.toml","requirements-cpu.lock","package.json","package-lock.json","README.md"]:

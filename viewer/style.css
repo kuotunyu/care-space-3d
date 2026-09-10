@@ -24,6 +24,7 @@ input[aria-invalid=true] { border-color: #a44230; background: #fff6f3; }
 .panel { min-width: 0; background: var(--panel); border: 1px solid var(--line); overflow: auto; }
 .panel section { padding: 16px; border-bottom: 1px solid #dce5ea; }
 .panel section:last-child { border-bottom: 0; }
+.evidence a { display: block; padding: 6px 0; }
 .panel h2 { font-size: 13px; margin: 0 0 12px; font-weight: 650; }
 .panel label { display: block; font-size: 12px; color: var(--muted); margin: 10px 0; }
 .panel select { display: block; width: 100%; margin-top: 6px; padding: 9px 6px; }

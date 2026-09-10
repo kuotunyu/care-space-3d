@@ -53,6 +53,7 @@ npm ci
 .venv/Scripts/python scripts/build_depth_audit.py
 node scripts/build_diagnostics.mjs
 .venv/Scripts/python -m pytest -q
+node --test tests/browser-*.test.mjs
 ./scripts/serve.ps1
 ```
 
@@ -107,3 +108,7 @@ ReplicaCAD 網站寫 CC BY 4.0，但固定版本 LICENSE.txt 寫 **CC BY-NC 4.0*
 執行 `scripts/make_colab_bundle.py` 取得 `artifacts/care-space-3d-source.zip`，放入
 自己的 Drive `CareSpace3D/` 後執行 notebook。下載/模型/結果持久保存，可中斷恢復。
 本次沒有執行 Colab；CPU 路徑不假設會分到特定 GPU。GPU adapter 尚未驗證。
+
+來源 ZIP 包含 Python／前端測試；Colab 安裝後先跑 CPU 測試，取得 Node 相依後再跑
+前端測試。工作台的「保存的研究報告」可開啟深度診斷與降為未知實驗，兩份報告均
+使用保存的原始查詢，並在開啟時核對 study 指紋。

@@ -27,7 +27,10 @@ async function loadStudy(){
     const response=await fetch('/artifacts/study.json',{cache:'no-store'});
     if(!response.ok) throw new Error(`HTTP ${response.status}`);
     const raw=await response.text();study=JSON.parse(raw);document.body.dataset.studyBytes=response.headers.get('content-length')||String(new TextEncoder().encode(raw).byteLength);
-    fetch('/artifacts/depth-audit/index.html',{method:'HEAD',cache:'no-store'}).then(r=>{$('depthAuditLink').hidden=!r.ok}).catch(()=>{});
+    for(const id of ['depthAuditLink','abstentionLink']){
+      const link=$(id);
+      fetch(link.getAttribute('href'),{method:'HEAD',cache:'no-store'}).then(r=>{link.hidden=!r.ok}).catch(()=>{});
+    }
     if(study?.schema_version!==1||!Array.isArray(study.cases)) throw new Error('不支援的資料格式');
     if(!study.cases.length){ setFatal('研究資料中沒有案例。請先產生 artifacts/study.json。'); return; }
     ui.loadState.textContent=`資料就緒 · ${study.cases.length} 案例`;

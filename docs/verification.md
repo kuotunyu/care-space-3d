@@ -160,3 +160,25 @@ dependency licenses are retained separately. No remote repository, push or deplo
   zero-denominator label, no horizontal overflow or console errors; desktop inspected.
 - README and shared Colab launcher updated; notebook/source bundle regenerated locally.
   Colab itself was not executed.
+
+## Report access and source handoff — 2026-09-10
+
+- Added a separate saved-report section in the workbench. It distinguishes stored
+  experiment queries from current interactive endpoints and links both forensic and
+  abstention reports when their files are available.
+- Browser found the center of a wrapped inline report link fell into non-clickable
+  line spacing. Links now occupy full rows with padding. Updated stylesheet URL avoids
+  reusing the observed stale browser CSS cache. Actual viewer-to-abstention and
+  viewer-to-depth-audit navigation both verified, with matching study fingerprint;
+  return links also verified. No change to passage methods or recorded results.
+- Source ZIP previously omitted tests; it now includes Python and Node tests. Colab
+  launcher runs CPU tests after installation and Node tests after npm installation.
+- Extracted source to project-local artifacts/handoff-smoke. Confirmed Python module
+  imports resolved inside the extracted src directory using PYTHONPATH; all 29 tests
+  passed there. Used existing project Python runtime/dependencies, not a fresh venv.
+- Installed the locked Three.js dependency in the extracted directory using
+  `npm ci --offline --ignore-scripts`; all 11 Node tests and viewer syntax check passed.
+  All notebook code cells compiled. No model inference/download or Colab execution.
+- ZIP inspection confirmed tests present and data, models, artifacts, third_party,
+  .venv, node_modules and .git excluded. Final bundle entries checked against current
+  source bytes after documentation/style updates. No publication or remote operation.
