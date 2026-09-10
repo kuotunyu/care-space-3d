@@ -81,6 +81,11 @@ GitHub repo 建立、push 或公開部署。
 報告也按支援影格數對照全部 DA3 障礙格與 oracle；單影格支援仍包含參考障礙，
 不能直接刪除。格子重疊比例不等於路徑錯誤放行率。
 
+[障礙降為未知實驗](docs/abstention.md) 使用固定單影格規則，保留自由格集合，
+檢查降低阻斷確定性的代價。執行 `.venv/Scripts/python scripts/run_abstention.py`，
+本機開啟 `/artifacts/abstention/index.html`。這是重用既有評估案例的探索性實驗，
+不會修改主要工作台的研究結果；未知增加不等於重建成功。
+
 - 全部 RGB-D 的三案例得到可通行／阻斷／未知。DA3 保留開放通道誤判阻斷的負例。
 - 每個方法僅 3 個固定 evaluation 查詢，變體共享房間/家具，沒有獨立家庭泛化證據。
 - 0.10 m 體素、已觀測射線累積、free/occupied/unknown；unknown 不自動視為 free。

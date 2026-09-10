@@ -134,3 +134,29 @@ dependency licenses are retained separately. No remote repository, push or deplo
   table visually inspected, 30 images loaded, no horizontal page overflow or console errors.
 - Original study SHA256 unchanged. No inference, GPU work, threshold selection, new
   dependency or passage-state change. Source bundle regenerated; Colab remains unexecuted.
+
+## Single-frame occupied-to-unknown experiment — 2026-09-10
+
+- Fixed exactly-one-frame rule documented before executing cached evaluation. Analytic
+  tests ran first: blocked wall becomes unknown, original free set unchanged, repeated
+  support retained, unknown preserved, stale/mismatched support rejected. Predicted
+  endpoint helper has no reference-depth/geometry argument. New tests failed on missing
+  implementation, then passed. Full Python 29 passed; Node 11 passed.
+- Six evaluation case/method combinations completed, no failures. Distinct selected
+  frame IDs checked, source observations and prediction revisions validated; all six
+  predicted endpoint unions reproduced their stored DA3 occupied masks exactly.
+- All-observation statuses remained blocked/blocked/unknown. Interval normal changed
+  blocked to unknown; interval blocked/sparse stayed blocked/unknown. Interval decision
+  coverage fell from 2/3 to 1/3. No new passable query; zero predicted-pass denominator
+  remains null/not applicable, not a claimed 0% false-release rate among released routes.
+- Each output grid and supporting-frame count saved separately with SHA256. Runtime
+  separates transform/planning from whole launcher. This was cached CPU work, no new
+  inference. Original study remains byte-identical to the SHA256 recorded above.
+- Rule was motivated by prior inspection of these scenes: explicitly exploratory
+  reuse, not held-out validation. Column support is not same-surface correspondence.
+  Negative result retained; default reconstruction/planner/viewer study not replaced.
+- Read-only reviewer found no material correctness, information-boundary or accounting
+  issues. Browser verified six result rows and four metric rows, matched study fingerprint,
+  zero-denominator label, no horizontal overflow or console errors; desktop inspected.
+- README and shared Colab launcher updated; notebook/source bundle regenerated locally.
+  Colab itself was not executed.
