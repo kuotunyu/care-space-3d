@@ -4,7 +4,7 @@ from carespace.fusion import volume_centers
 from carespace.synthesis import camera_rays
 
 FLOOR_TOLERANCE_M=1e-4  # Numerical equality with the controlled support plane Y=0.
-AUDIT_REV="pixel-endpoint-floor-support-v1"
+AUDIT_REV="pixel-endpoint-support-risk-v2"
 
 def trace_frame(reference,predicted,bounds,resolution,height):
     predicted=np.asarray(predicted)
@@ -64,3 +64,25 @@ def summarize_support(traces,baseline_states,selected_states):
         "single_frame_supported_conflict_cells":int((conflict&(votes==1)).sum()),
         "supporting_frame_histogram":{str(int(k)):int(v) for k,v in zip(support_count,cell_count)},
         "occupied_union_matches":True}
+
+
+def support_risk(traces,baseline_states,selected_states,oracle_states):
+    """Post-hoc cell overlap, not a filtering rule or a passage error rate."""
+    summarize_support(traces,baseline_states,selected_states)
+    base=np.asarray(baseline_states);selected=np.asarray(selected_states)
+    oracle=np.asarray(oracle_states)
+    if oracle.shape!=selected.shape or not np.isin(oracle,[0,1]).all():
+        raise ValueError('Oracle must have matching shape and complete binary states')
+    votes=np.sum([t['occupied_support'] for t in traces],axis=0)
+    groups=[]
+    for count in np.unique(votes[selected==1]):
+        mask=(selected==1)&(votes==count)
+        groups.append({'supporting_frames':int(count),'cells':int(mask.sum()),
+            'oracle_occupied':int((mask&(oracle==1)).sum()),
+            'oracle_free':int((mask&(oracle==0)).sum()),
+            'baseline_occupied':int((mask&(base==1)).sum()),
+            'baseline_free':int((mask&(base==0)).sum()),
+            'baseline_unknown':int((mask&(base==-1)).sum())})
+    single=next((g for g in groups if g['supporting_frames']==1),None)
+    return {'occupied_cells':int((selected==1).sum()),'groups':groups,
+        'single_frame_oracle_occupied_fraction':single['oracle_occupied']/single['cells'] if single else None}

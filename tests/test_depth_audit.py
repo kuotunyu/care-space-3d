@@ -44,3 +44,35 @@ def test_shared_cell_support_is_a_union_not_an_additive_attribution():
     assert s['supporting_frame_histogram']=={'2':1}
     with pytest.raises(ValueError):summarize_support([floor],base,base)
     with pytest.raises(ValueError):summarize_support([floor],base[0],selected)
+
+
+def test_support_count_cannot_identify_obstacles_without_reference():
+    from carespace.depth_audit import support_risk
+    a=np.array([[True,True,False]])
+    b=np.array([[False,True,False]])
+    def trace(mask):
+        return {name+'_support':mask if name=='occupied' else np.zeros_like(mask)
+                for name in ['occupied','floor','nonfloor','unlabeled']}
+    base=np.array([[-1,0,1]]);selected=np.array([[1,1,0]]);oracle=np.array([[1,0,1]])
+    result=support_risk([trace(a),trace(b)],base,selected,oracle)
+    assert result['occupied_cells']==2
+    assert result['single_frame_oracle_occupied_fraction']==1.
+    assert result['groups']==[
+        {'supporting_frames':1,'cells':1,'oracle_occupied':1,'oracle_free':0,
+         'baseline_occupied':0,'baseline_free':0,'baseline_unknown':1},
+        {'supporting_frames':2,'cells':1,'oracle_occupied':0,'oracle_free':1,
+         'baseline_occupied':0,'baseline_free':1,'baseline_unknown':0}]
+    assert np.array_equal(selected,[[1,1,0]])  # Audit cannot modify reconstruction.
+
+
+def test_support_risk_empty_denominator_and_invalid_oracle():
+    import pytest
+    from carespace.depth_audit import support_risk
+    mask=np.zeros((1,2),bool)
+    trace={name+'_support':mask for name in ['occupied','floor','nonfloor','unlabeled']}
+    base=np.zeros((1,2),np.int8)
+    result=support_risk([trace],base,base,base)
+    assert result['groups']==[]
+    assert result['single_frame_oracle_occupied_fraction'] is None
+    for oracle in [np.zeros(2),np.array([[0,-1]]),np.array([[0,np.nan]])]:
+        with pytest.raises(ValueError):support_risk([trace],base,base,oracle)

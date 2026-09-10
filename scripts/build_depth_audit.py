@@ -11,7 +11,8 @@ import sys
 import time
 import numpy as np
 from PIL import Image
-from carespace.depth_audit import trace_frame,summarize_support,AUDIT_REV,FLOOR_TOLERANCE_M
+from carespace.depth_audit import trace_frame,summarize_support,support_risk,AUDIT_REV,FLOOR_TOLERANCE_M
+from carespace.scenes import build_scene,oracle_grid
 from carespace.learned import prediction_key,metric_scale,CODE_REV,MODEL_REV,ADAPTER_REV
 from carespace.pipeline import load_observation,observation_digest
 from carespace.synthesis import camera_rays
@@ -73,7 +74,7 @@ def main():
     raw=(ART/'study.json').read_bytes();study=json.loads(raw)
     if study.get('reconstruction_revision')!=FUSION_REV:raise ValueError('Unsupported saved fusion revision')
     sources={p:sha((ROOT/p).read_bytes()) for p in ['src/carespace/depth_audit.py','src/carespace/fusion.py',
-        'src/carespace/synthesis.py','src/carespace/learned.py','scripts/build_depth_audit.py']}
+        'src/carespace/synthesis.py','src/carespace/scenes.py','src/carespace/learned.py','scripts/build_depth_audit.py']}
     records=[];summaries=[];panels=[];failures=[];conversion=None
     for case in study['cases']:
         if case['split']!='evaluation':continue
@@ -81,6 +82,11 @@ def main():
             baseline=next(m for m in case['methods'] if m['id']=='all')
             selected=next(m for m in case['methods'] if m['id']=='da3-all')
             if sorted(baseline['selected_frames'])!=sorted(selected['selected_frames']):raise ValueError('Unmatched frame IDs')
+            if len(set(selected['selected_frames']))!=len(selected['selected_frames']):raise ValueError('Duplicate frame IDs')
+            scene=build_scene(case['id'].removeprefix('replica-'),replica=True)
+            if scene.scene_id!=case['scene_id'] or scene.bounds!=case['bounds']:
+                raise ValueError('Oracle scene does not match saved experiment')
+            oracle=oracle_grid(scene,case['resolution'],study['body']['height'])
             base=np.asarray(baseline['states']).reshape(case['shape']);grid=np.asarray(selected['states']).reshape(case['shape'])
             conflict=(base==0)&(grid==1);traces=[];local=[];visuals={}
             by_id={f['id']:f for f in case['frames']}
@@ -102,6 +108,8 @@ def main():
                     'observation_sha256':sha(obs_path.read_bytes()),'prediction_sha256':sha(pred_path.read_bytes()),**trace['metrics']}
                 records.append(record);local.append(record);traces.append(trace);visuals[frame_id]=(trace,obs.rgb,obs.depth,predicted)
             summary={'case_id':case['id'],'title':case['title'],'frames':len(traces),**summarize_support(traces,base,grid)}
+            summary['support_risk']=support_risk(traces,base,grid,oracle.states)
+            summary['oracle_states_sha256']=sha(oracle.states.astype(np.int8).tobytes())
             summary['floor_lift_pixels']=sum(r['floor_lift_pixels'] for r in local)
             summary['floor_valid_prediction_pixels']=sum(r['floor_valid_prediction_pixels'] for r in local)
             summaries.append(summary)
@@ -130,6 +138,23 @@ def main():
     if failures:raise SystemExit(1)
 
 def write_report(result,panels):
+    risk_note='以全部 DA3 障礙格為母體，依不同影格的端點支援數分組。Oracle 是同一場景完整三角形幾何的離散參考；RGB-D 基線仍可能未知。單影格與 oracle 障礙重疊比例的分母是全部單影格支援障礙格，不是路徑錯誤放行率；多次支援也不保證正確。沒有執行刪除、改成自由或重新規劃。'
+    risk_sections=[];risk_lines=['## 單影格障礙是否可以刪除？','',risk_note,'']
+    for s in result['summaries']:
+        risk=s['support_risk'];single=next((g for g in risk['groups'] if g['supporting_frames']==1),None)
+        fraction=risk['single_frame_oracle_occupied_fraction']
+        description=(f"單影格支援的 {single['cells']} 格中，{single['oracle_occupied']} 格與 oracle 障礙重疊（{fraction:.1%}）。" if single else '沒有單影格支援障礙格，比例不適用。')
+        risk_rows=[]
+        risk_lines += [f"### {s['title']}",'',description,'',
+            '| 支援影格數 | 全部障礙格 | Oracle 障礙 | Oracle 自由 | RGB-D 障礙 | RGB-D 自由 | RGB-D 未知 |',
+            '|---:|---:|---:|---:|---:|---:|---:|']
+        for g in risk['groups']:
+            values=[g[k] for k in ['supporting_frames','cells','oracle_occupied','oracle_free','baseline_occupied','baseline_free','baseline_unknown']]
+            risk_rows.append('<tr>'+''.join(f'<td>{v}</td>' for v in values)+'</tr>')
+            risk_lines.append('| '+' | '.join(map(str,values))+' |')
+        risk_lines.append('')
+        risk_sections.append(f"<section><h3>{esc(s['title'])}</h3><p>{esc(description)}全部 DA3 障礙格：{risk['occupied_cells']}。</p><div class=table><table><thead><tr><th>支援影格數</th><th>全部障礙格</th><th>Oracle 障礙</th><th>Oracle 自由</th><th>RGB-D 障礙</th><th>RGB-D 自由</th><th>RGB-D 未知</th></tr></thead><tbody>{''.join(risk_rows)}</tbody></table></div></section>")
+    risk_html='<section><h2>單影格障礙是否可以刪除？</h2><p>'+esc(risk_note)+'</p>'+''.join(risk_sections)+'</section>'
     rows=[]
     for s in result['summaries']:
         rows.append(f"<tr><th>{esc(s['title'])}</th><td>{s['conflict_cells']}</td><td>{s['floor_supported_conflict_cells']}</td><td>{s['floor_only_conflict_cells']}</td><td>{s['single_frame_supported_conflict_cells']}</td><td>{s['floor_lift_pixels']} / {s['floor_valid_prediction_pixels']}</td></tr>")
@@ -150,7 +175,7 @@ def write_report(result,panels):
 <main hidden><p>{esc(check_text)}</p><p>{esc(finding)}</p>{errors}<h2>全部觀測的來源追溯</h2><div class=table><table><thead><tr><th>案例</th><th>基線自由→DA3 障礙格</th><th>有真地板像素支援</th><th>僅有真地板像素支援</th><th>僅一張影格支援</th><th>地板預測進入障礙高度／有效地板像素</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
 <p>「支援」表示預測深度反投影端點落入該障礙欄。多影格可重複支援同格；表中格數取聯集，不把像素或影格當獨立家庭。「僅有」排除任何非地板及無參考回波像素的共同支援。每個成功案例都已核對端點聯集與原存 DA3 障礙網格完全一致。</p>
 <p>真地板以合成參考端點 |Y|≤0.0001 m 識別。預測端點須位於研究 XZ 範圍與既有高度體素內（Y 從 0.10 m 起，上界依設定向上取整）。無效預測不算成正確地板。深度比只描述偏差，未用它擬合或修正尺度。</p>
-{''.join(figures)}<section><h2>可追溯性與限制</h2><p>逐影格完整統計、來源雜湊與失敗紀錄：<a href="audit.json">audit.json</a>。本頁只展示固定首張、地板支援分歧格數最高及整體支援分歧格數最高的影格，最高者是診斷選樣，非新的評估集。</p><p>這證明了所選資料中部分地板深度誤差如何支援障礙格，不能單憑此結果斷言模型根因、全域尺度失準或移除這些格後一定可通行。</p><p>Study SHA256：<code>{result['study_sha256']}</code></p></section></main>
+{risk_html}{''.join(figures)}<section><h2>可追溯性與限制</h2><p>逐影格完整統計、來源雜湊與失敗紀錄：<a href="audit.json">audit.json</a>。本頁只展示固定首張、地板支援分歧格數最高及整體支援分歧格數最高的影格，最高者是診斷選樣，非新的評估集。</p><p>這證明了所選資料中部分地板深度誤差如何支援障礙格，不能單憑此結果斷言模型根因、全域尺度失準或移除這些格後一定可通行。</p><p>Study SHA256：<code>{result['study_sha256']}</code></p></section></main>
 <script type=module>const label=document.getElementById('validation');try{{const response=await fetch('../study.json',{{cache:'no-store'}});if(!response.ok)throw Error('無法讀取研究資料');const bytes=await response.arrayBuffer();const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),x=>x.toString(16).padStart(2,'0')).join('');if(digest!=='{result['study_sha256']}')throw Error('研究資料已變更，請重新產生深度診斷');label.textContent='研究資料指紋相符 · 保存實驗的事後評估';document.querySelector('main').hidden=false}}catch(e){{label.textContent=e.message}}</script></html>'''
     (OUT/'index.html').write_text(page,encoding='utf8')
     lines=['# 深度與障礙來源診斷','',check_text,'','使用合成真值進行事後評估；沒有修正深度、重跑模型或調整門檻。','',finding,'',
@@ -162,6 +187,6 @@ def write_report(result,panels):
         f"失敗案例數：{len(result['failures'])}。",*[str(f) for f in result['failures']],
         f"Study SHA256: `{result['study_sha256']}`",'',
         '重現：`.venv/Scripts/python scripts/build_depth_audit.py`。本機開啟 `/artifacts/depth-audit/index.html`，畫面先核對 study 指紋，過期時拒絕展示。','']
-    (ROOT/'docs/depth-audit.md').write_text('\n'.join(lines),encoding='utf8')
+    (ROOT/'docs/depth-audit.md').write_text('\n'.join(lines+risk_lines),encoding='utf8')
 
 if __name__=='__main__':main()

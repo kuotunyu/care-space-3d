@@ -115,3 +115,22 @@ dependency licenses are retained separately. No remote repository, push or deplo
   Report URL was opened directly. Automated navigation via the viewer anchor was not
   confirmed, so this check does not claim click-through navigation coverage.
 - Colab launcher includes the same audit builder. The notebook has not been run in Colab.
+
+## Supporting-frame risk extension — 2026-09-10
+
+- Python: 26 passed; Node: 11 passed. New tests first failed on the absent implementation,
+  then passed for single-frame true occupancy, repeated spurious occupancy, unknown
+  baseline cells, no occupied cells (null fraction), invalid oracle and unchanged inputs.
+- Cached audit regenerated across 49 frames, zero failures. All 18 exact support-count
+  groups partition their case's learned occupied grid; each group's oracle binary counts
+  and baseline ternary counts separately sum to its explicit denominator.
+- Oracle rebuilt using existing rasterization, with scene identity/bounds verified and
+  shape validated. Oracle int8 grid hashes and scene implementation hash are recorded.
+  Duplicate selected frame IDs are rejected to avoid double-counting support.
+- Single-frame oracle occupied overlap: normal 199/1308 (15.2%), blocked 137/1299
+  (10.5%), sparse 35/222 (15.8%). These exploratory cell overlaps are not route failure
+  rates, and the oracle is a discretized reference. No filtering intervention was run.
+- Browser: all three grouping tables present, normal denominator/overlap text checked,
+  table visually inspected, 30 images loaded, no horizontal page overflow or console errors.
+- Original study SHA256 unchanged. No inference, GPU work, threshold selection, new
+  dependency or passage-state change. Source bundle regenerated; Colab remains unexecuted.
