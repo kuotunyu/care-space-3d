@@ -1,26 +1,42 @@
 {
   "manim": "0.20.1",
-  "manim_source": "https://github.com/ManimCommunity/manim/tree/v0.20.1",
   "python": "3.11.15",
   "platform": "Windows-10-10.0.26200-SP0",
   "renderer": "cairo",
   "device": "CPU",
   "font": "Microsoft JhengHei (system font, not distributed)",
   "ffmpeg": "ffmpeg version N-110112-gd6e30291db-20230328 Copyright (c) 2000-2023 the FFmpeg developers",
-  "scope": "Original 2D explanatory ray model; existing planner; not ReplicaCAD or production RGB-D fusion.",
-  "duration_seconds": 25.6,
-  "statuses": [
-    "unknown",
-    "unknown",
-    "passable"
+  "scope": "Original fixed 2D observed grid and endpoints. Existing planner; only radius varies. Not a physical threshold or wheelchair validation.",
+  "duration_seconds": 24.8,
+  "resolution_m": 0.2,
+  "inflation_margin_m": 0.28284271247461906,
+  "cases": [
+    {
+      "radius_m": 0.12,
+      "status": "passable",
+      "blocked_center_cells": 336
+    },
+    {
+      "radius_m": 0.25,
+      "status": "passable",
+      "blocked_center_cells": 344
+    },
+    {
+      "radius_m": 0.35,
+      "status": "blocked",
+      "blocked_center_cells": 444
+    }
   ],
-  "unknown_cells": [
-    640,
-    232,
-    4
-  ],
-  "visual_checks": "Extracted first, occlusion, second-view and final frames inspected; Chinese label morphing replaced with fade transition.",
+  "visual_checks": "Sampled initial, both passable routes, blocked transition, and final frames. Final multi-line label spacing checked at full 720p.",
   "files": {
+    "animations/footprint_story.py": {
+      "sha256": "49f2217ebeed6a0803be9f0aac8871fbd9514b79cdba6dd7ce526f7bc7973f01",
+      "bytes": 1625
+    },
+    "animations/footprint_radius.py": {
+      "sha256": "1904f29c7736d494030f3927c6379066cbfaec83c0df31fe3d5ac373bdb9d99b",
+      "bytes": 5590
+    },
     "animations/evidence_story.py": {
       "sha256": "4241ca7ad47e279d436042d1aa5491695c804f7bd21e33caf6ce5830b9d30fe0",
       "bytes": 2292
@@ -45,15 +61,14 @@
       "sha256": "7d7c43261f61491d80a5e0e696a3eb50e4670cae0ed17bf94bd86f177d83e334",
       "bytes": 2069
     },
-    "docs/media/unknown-space.mp4": {
-      "sha256": "3c18b75ab251e4fc8e6f6d57168090449a162f638b74403fd49d70766eee916b",
-      "bytes": 1083447
+    "docs/media/footprint-radius.mp4": {
+      "sha256": "685fbbaa21a236efa3bc30c4f2e50afe701f4102867efc88025677b66713a3ed",
+      "bytes": 1145368
     },
-    "docs/media/unknown-space.gif": {
-      "sha256": "a7d75150a5d1182f2574fa7b2e2b5a074829847e41f4a66d5ffaa5bc9cc850ac",
-      "bytes": 3502710
+    "docs/media/footprint-radius.gif": {
+      "sha256": "b2c5241c1d4e520863d2dc7fdd596579de9b7a42f5b623774e0232761ea92c9b",
+      "bytes": 3891484
     }
   },
-  "render_driver_note": "The driver later gained an optional footprint-radius argument; the default unknown-space render command and original media are unchanged.",
   "hash_convention": "SHA256 over exact published file bytes; text files use Git LF line endings."
 }
