@@ -1,5 +1,7 @@
 # Single-frame occupancy abstention experiment
 
+> 歷史計畫，非目前待辦；實驗已完成，結果見 [單影格障礙降為未知實驗](abstention.md)，第一版完成狀態見 [專案狀態](publication-preparation.md)。
+
 User-authorized bounded continuation. Hypothesis: treating single-frame occupied
 columns as unknown can reduce unsupported blocked decisions at a cost in decision
 coverage. It cannot create new observed-free routes: the free set is unchanged.
